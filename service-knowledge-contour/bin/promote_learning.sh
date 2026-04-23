@@ -32,15 +32,30 @@ def classify(t: str) -> str:
     if forced:
         return forced
     tl = t.lower()
-    if any(x in tl for x in ['tradeoff', 'decision', 'decided', 'alternative']):
+    if any(x in tl for x in [
+        'tradeoff', 'decision', 'decided', 'alternative',
+        'решени', 'альтернатив', 'компромисс'
+    ]):
         return 'decision'
-    if any(x in tl for x in ['verify', 'test', 'lint', 'ci', 'cannot verify locally', 'evidence']):
+    if any(x in tl for x in [
+        'verify', 'test', 'lint', 'ci', 'cannot verify locally', 'evidence',
+        'провер', 'тест', 'линт', 'доказательств', 'не проверяется локально', 'не воспроизвести локально'
+    ]):
         return 'verification'
-    if any(x in tl for x in ['runbook', 'restart', 'recovery', 'incident', 'procedure', 'how to recover']):
+    if any(x in tl for x in [
+        'runbook', 'restart', 'recovery', 'incident', 'procedure', 'how to recover',
+        'ранбук', 'перезапуск', 'восстановлен', 'восстановит', 'инцидент', 'процедур', 'как восстанов'
+    ]):
         return 'operational'
-    if any(x in tl for x in ['entrypoint', 'boundary', 'topology', 'module', 'schema', 'integration']):
+    if any(x in tl for x in [
+        'entrypoint', 'boundary', 'topology', 'module', 'schema', 'integration',
+        'точк', 'вход', 'границ', 'тополог', 'модул', 'схем', 'интеграц'
+    ]):
         return 'structural'
-    if any(x in tl for x in ['term', 'meaning', 'definition', 'ambiguous']):
+    if any(x in tl for x in [
+        'term', 'meaning', 'definition', 'ambiguous',
+        'термин', 'значени', 'определени', 'неоднознач'
+    ]):
         return 'terminology'
     return 'discard'
 

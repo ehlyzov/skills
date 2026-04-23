@@ -99,6 +99,35 @@ Do not create during bootstrap:
 - eval placeholders;
 - policy documents that only restate the contour rules.
 
+# Language policy
+
+This skill may be invoked and operated in Russian or English.
+
+The contour model does not change by language.
+
+Keep these files and artifacts in English:
+
+- `AGENTS.md`
+- `CLAUDE.md`
+- `docs/service/generated/change-surface.json`
+- `docs/service/generated/hotspots.md`
+- `docs/service/generated/health-report.json`
+
+These are the fixed English scaffold.
+
+These files may be manually maintained in Russian or English after bootstrap:
+
+- `docs/service/SERVICE_MAP.md`
+- `docs/service/VERIFY.md`
+- event-driven docs such as `docs/service/ADR/*`, `docs/service/runbooks/*`, `docs/service/incidents/*`, `docs/service/migrations/*`, and `docs/service/GLOSSARY.md`
+
+Rules:
+
+- one repository should prefer one primary human language for manually curated prose;
+- do not mix Russian and English prose heavily inside one canonical doc unless code, commands, paths, or API names require it;
+- keep file names, YAML keys, and JSON keys stable in English;
+- support Russian-language operation by policy, not by translating the fixed scaffold.
+
 # Canonical file contracts
 
 ## 1. `AGENTS.md`
@@ -109,6 +138,7 @@ It must stay short.
 
 Allowed content:
 - non-negotiable work rules;
+- short safe-edit workflow rules;
 - pointer to canonical docs;
 - safe-edit expectations;
 - verification expectation;
@@ -116,11 +146,14 @@ Allowed content:
 
 Forbidden content:
 - long architecture prose;
+- broad communication doctrine;
+- generic coding philosophy manifestos;
 - copied command catalogs;
 - runbook content;
 - historical narrative;
 - repeated troubleshooting notes;
 - scattered TODO placeholders.
+- self-growing project policy sections.
 
 ## 2. `CLAUDE.md`
 
@@ -152,6 +185,11 @@ Required sections:
 - references to generated overlays;
 - review triggers.
 
+Language:
+- bootstrap may seed this file in English;
+- the repository team may later rewrite it in Russian or English;
+- structure matters more than heading language.
+
 Forbidden content:
 - file-by-file encyclopedias;
 - copied code listings;
@@ -175,6 +213,11 @@ Required sections:
 - risk-triggered extra checks;
 - required change evidence;
 - what cannot be verified locally.
+
+Language:
+- bootstrap may seed this file in English;
+- the repository team may later rewrite it in Russian or English;
+- commands and machine-relevant tokens must remain literal even if prose changes language.
 
 This file is the canonical home for:
 - commands that matter for verification or local run;
@@ -209,6 +252,7 @@ Rules:
 - gaps without owner are invalid;
 - gaps without expiry are invalid;
 - expired gaps must fail audit in mandatory contexts.
+- field names stay in English, but fact text values may be Russian or English.
 
 # Generated layer contract
 
@@ -485,6 +529,7 @@ Rules:
 - remove durable knowledge from startup docs;
 - replace prose with pointers to canon;
 - keep tool-specific deltas thin.
+- keep the installed startup scaffold in English.
 
 ## Phase 3: create or repair canonical core
 
@@ -553,6 +598,7 @@ Responsibilities:
 - do not generate event-driven docs;
 - do not generate empty optional folders;
 - do not create documentation forests.
+- keep installed files in English even when the repository works primarily in Russian.
 
 ## `bin/refresh_contour.sh`
 

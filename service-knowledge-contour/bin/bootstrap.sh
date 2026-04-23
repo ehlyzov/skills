@@ -113,10 +113,17 @@ Read this file before starting work.
 
 ## Non-negotiables
 - Do not guess commands, paths, APIs, ownership, or verification results.
-- Keep changes small and reviewable.
+- Read the relevant files before editing.
+- Keep changes small, direct, and reviewable.
+- Use `docs/service/VERIFY.md` as the canonical verification contract.
 - Treat `docs/service/SERVICE_MAP.md` as the canonical structural map.
-- Treat `docs/service/VERIFY.md` as the canonical verification contract.
 - Put unresolved durable uncertainty only in `docs/service/knowledge-gaps.yaml`.
+- Do not duplicate architecture or verification truth in startup docs.
+
+## Working rules
+- Prefer repository evidence over assumptions.
+- Verify non-trivial changes with the commands documented in `docs/service/VERIFY.md`.
+- Keep startup guidance short and push durable detail into canonical docs.
 
 ## Canonical knowledge
 - Structure and risk: `docs/service/SERVICE_MAP.md`
@@ -149,6 +156,8 @@ write_if_allowed "$ROOT/docs/service/SERVICE_MAP.md" <<'EOD'
 ## Service purpose
 Describe the service in one short paragraph after repository inspection.
 
+Bootstrap seeds this file in English. The repository team may later maintain it in Russian or English.
+
 ## Runtime entrypoints
 List the actual runtime entrypoints and top-level startup paths visible from the repo.
 
@@ -178,6 +187,8 @@ write_if_allowed "$ROOT/docs/service/VERIFY.md" <<EOD
 ## Fastest local setup path
 - ${INSTALL_CMD}
 - ${LOCAL_RUN_CMD}
+
+Bootstrap seeds this file in English. The repository team may later maintain it in Russian or English, but commands must remain literal.
 
 ## Narrow verification path
 - ${NARROW_VERIFY_CMD}

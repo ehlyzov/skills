@@ -52,3 +52,27 @@ To inspect stale contour candidates:
 - The scripts default to safe behavior. They do not overwrite existing canonical docs unless `FORCE=1` is passed to `bootstrap.sh`.
 - Generated artifacts are rebuildable. Treat them as navigation and audit overlays, not source of truth.
 - `knowledge-gaps.yaml` is the only allowed registry for unresolved durable uncertainty.
+
+## Russian-language repositories
+
+Russian support in this package is a policy and workflow guarantee, not template localization.
+
+These files remain English after install/bootstrap:
+
+- `AGENTS.md`
+- `CLAUDE.md`
+- `docs/service/generated/change-surface.json`
+- `docs/service/generated/hotspots.md`
+- `docs/service/generated/health-report.json`
+
+These files may later be manually maintained in Russian or English by the repository team:
+
+- `docs/service/SERVICE_MAP.md`
+- `docs/service/VERIFY.md`
+- event-driven docs such as ADRs, runbooks, incidents, migrations, and glossary entries
+
+Design intent:
+
+- file names and machine-readable keys stay in English for portability and script stability;
+- generated artifacts stay English so refresh/audit/prune remain predictable;
+- `AGENTS.md` is intentionally expanded only modestly: enough startup guidance to reduce guessing, but not enough to compete with canonical docs.
