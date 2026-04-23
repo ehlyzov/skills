@@ -28,7 +28,7 @@ This package provides a ready-to-commit starter kit for the `service-knowledge-c
 From the target repository root:
 
 ```bash
-cp -R /path/to/service-knowledge-contour-bplus/* .
+cp -R /path/to/service-knowledge-contour/* .
 chmod +x bin/*.sh
 ./bin/bootstrap.sh
 ./bin/refresh_contour.sh
