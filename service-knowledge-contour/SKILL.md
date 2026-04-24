@@ -595,15 +595,23 @@ The skill must add or maintain these scripts:
 
 Responsibilities:
 - create only the mandatory core and generated layer;
+- support a startup-only update mode for existing contours;
 - do not generate event-driven docs;
 - do not generate empty optional folders;
 - do not create documentation forests.
 - keep installed files in English even when the repository works primarily in Russian.
 
+Startup-only behavior:
+- `--startup-only` must update only `AGENTS.md` and `CLAUDE.md`;
+- it must not touch `SERVICE_MAP.md`, `VERIFY.md`, `knowledge-gaps.yaml`, or generated artifacts;
+- use it when the installed startup contract changed but repository canon is already maintained by humans.
+
 ## `bin/refresh_contour.sh`
 
 Responsibilities:
 - rebuild the generated layer from current repo state where possible;
+- support a caller-provided comparison base;
+- include staged, unstaged, and untracked worktree changes in the changed-surface overlay;
 - detect likely triggers;
 - propose exact canonical updates;
 - recommend event-driven docs only when justified.
@@ -616,6 +624,7 @@ Responsibilities:
 - validate contour integrity;
 - emit machine-readable failures or warnings;
 - fail on missing mandatory files, broken references, expired gaps, or severe drift.
+- warn when generated change-surface triggers require a canonical update but the corresponding canonical doc was not changed.
 
 A fake audit script is worse than no audit script.
 

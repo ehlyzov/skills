@@ -1,13 +1,37 @@
 #!/usr/bin/env bash
 set -euo pipefail
-ROOT="${1:-.}"
+ROOT="."
+BASE_REF=""
 PYTHON_BIN="${PYTHON_BIN:-python3}"
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --base)
+      BASE_REF="$2"
+      shift 2
+      ;;
+    --)
+      shift
+      break
+      ;;
+    -*)
+      echo "unknown arg: $1" >&2
+      exit 2
+      ;;
+    *)
+      ROOT="$1"
+      shift
+      ;;
+  esac
+done
+
 mkdir -p "$ROOT/docs/service/generated"
 
-"$PYTHON_BIN" - "$ROOT" <<'PY'
+"$PYTHON_BIN" - "$ROOT" "$BASE_REF" <<'PY'
 import json, subprocess, sys, re
 from pathlib import Path
 root = Path(sys.argv[1]).resolve()
+base_ref = sys.argv[2].strip()
 gen = root / "docs" / "service" / "generated"
 gen.mkdir(parents=True, exist_ok=True)
 CONFIG_NAMES = {
@@ -27,12 +51,20 @@ def git(*args):
 changed_files = []
 inside = git("rev-parse", "--is-inside-work-tree")
 if inside == "true":
-    base = git("rev-parse", "HEAD~1")
+    changed = set()
     head = git("rev-parse", "HEAD")
+    base = base_ref or git("rev-parse", "HEAD~1")
     if base and head:
         diff = git("diff", "--name-only", f"{base}..{head}")
-        if diff:
-            changed_files = [x for x in diff.splitlines() if x.strip()]
+        changed.update(x for x in diff.splitlines() if x.strip())
+    for args in [
+        ("diff", "--name-only"),
+        ("diff", "--cached", "--name-only"),
+        ("ls-files", "--others", "--exclude-standard"),
+    ]:
+        diff = git(*args)
+        changed.update(x for x in diff.splitlines() if x.strip())
+    changed_files = sorted(changed)
 
 entrypoints = []
 for p in root.rglob('*'):

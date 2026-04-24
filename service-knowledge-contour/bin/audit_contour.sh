@@ -130,6 +130,21 @@ if verify.exists():
 if invalid_cmds:
     warn('commands referenced in VERIFY may be invalid for the current repo: ' + '; '.join(invalid_cmds[:10]))
 
+surface = root / 'docs/service/generated/change-surface.json'
+if surface.exists():
+    try:
+        payload = json.loads(surface.read_text(encoding='utf-8'))
+        changed = set(payload.get('changed_files') or [])
+        missing_updates = []
+        for trigger in payload.get('triggers') or []:
+            for rel in trigger.get('update') or []:
+                if rel not in changed:
+                    missing_updates.append(rel)
+        for rel in sorted(set(missing_updates)):
+            warn(f'contour trigger fired but {rel} was not changed')
+    except Exception:
+        warn('change-surface.json could not be parsed for trigger drift checks')
+
 report = {
     'status': 'generated',
     'audit_ok': not errors,

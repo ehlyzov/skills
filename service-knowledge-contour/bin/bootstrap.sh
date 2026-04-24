@@ -1,9 +1,31 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT="${1:-.}"
+ROOT="."
+STARTUP_ONLY="${STARTUP_ONLY:-0}"
 FORCE="${FORCE:-0}"
 PYTHON_BIN="${PYTHON_BIN:-python3}"
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --startup-only)
+      STARTUP_ONLY="1"
+      shift
+      ;;
+    --)
+      shift
+      break
+      ;;
+    -*)
+      echo "unknown arg: $1" >&2
+      exit 2
+      ;;
+    *)
+      ROOT="$1"
+      shift
+      ;;
+  esac
+done
 
 write_if_allowed() {
   local path="$1"
@@ -149,6 +171,11 @@ Canonical knowledge lives in:
 - `docs/service/VERIFY.md`
 - `docs/service/knowledge-gaps.yaml`
 EOD
+
+if [[ "$STARTUP_ONLY" == "1" ]]; then
+  echo "startup layer update complete"
+  exit 0
+fi
 
 write_if_allowed "$ROOT/docs/service/SERVICE_MAP.md" <<'EOD'
 # SERVICE_MAP

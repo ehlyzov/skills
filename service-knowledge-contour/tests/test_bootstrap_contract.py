@@ -1,3 +1,4 @@
+import os
 import shutil
 import subprocess
 import tempfile
@@ -137,6 +138,12 @@ class BootstrapContractTests(unittest.TestCase):
             ("Нужен ранбук восстановления после инцидента и процедура перезапуска.", "operational"),
             ("Нужно записать решение, альтернативы и компромисс.", "decision"),
             ("Нужно описать термин и его определение.", "terminology"),
+            ("Сборка падает только в CI, нужно записать команду и результат проверки.", "verification"),
+            ("Роут API изменил контракт, зависимость и конфиг воркера.", "structural"),
+            ("После алерта нужен регламент отката и восстановления.", "operational"),
+            ("Договорились выбрать этот подход из двух вариантов и записать причину.", "decision"),
+            ("Неясно, что означает это понятие, нужна расшифровка в глоссарии.", "terminology"),
+            ("Решили добавить проверку в CI и зафиксировать команду запуска.", "verification"),
         ]
         for text, expected in cases:
             result = subprocess.run(
@@ -164,6 +171,73 @@ class BootstrapContractTests(unittest.TestCase):
             text=True,
         )
         self.assertEqual("verification", json.loads(forced.stdout)["classification"])
+
+    def test_startup_only_updates_startup_files_without_touching_canon(self) -> None:
+        service_map = self.root / "docs/service/SERVICE_MAP.md"
+        verify = self.root / "docs/service/VERIFY.md"
+        service_map.write_text("custom service map\n", encoding="utf-8")
+        verify.write_text("custom verify\n", encoding="utf-8")
+        (self.root / "AGENTS.md").write_text("old agents\n", encoding="utf-8")
+        (self.root / "CLAUDE.md").write_text("old claude\n", encoding="utf-8")
+
+        env = os.environ.copy()
+        env["FORCE"] = "1"
+        subprocess.run(
+            ["bash", str(self.root / "bin" / "bootstrap.sh"), "--startup-only", str(self.root)],
+            check=True,
+            cwd=self.root,
+            env=env,
+        )
+
+        self.assertIn("Read the relevant files before editing.", (self.root / "AGENTS.md").read_text(encoding="utf-8"))
+        self.assertIn("Use `AGENTS.md` as the startup contract.", (self.root / "CLAUDE.md").read_text(encoding="utf-8"))
+        self.assertEqual("custom service map\n", service_map.read_text(encoding="utf-8"))
+        self.assertEqual("custom verify\n", verify.read_text(encoding="utf-8"))
+
+    def test_refresh_includes_working_tree_changes(self) -> None:
+        subprocess.run(["git", "init"], check=True, cwd=self.root, capture_output=True, text=True)
+        subprocess.run(["git", "config", "user.email", "test@example.com"], check=True, cwd=self.root)
+        subprocess.run(["git", "config", "user.name", "Test User"], check=True, cwd=self.root)
+        (self.root / "package.json").write_text('{"scripts":{"test":"node test.js"}}\n', encoding="utf-8")
+        subprocess.run(["git", "add", "."], check=True, cwd=self.root)
+        subprocess.run(["git", "commit", "-m", "baseline"], check=True, cwd=self.root, capture_output=True, text=True)
+
+        (self.root / "package.json").write_text('{"scripts":{"test":"node test.js","lint":"eslint ."}}\n', encoding="utf-8")
+        subprocess.run(
+            ["bash", str(self.root / "bin" / "refresh_contour.sh"), str(self.root), "--base", "HEAD"],
+            check=True,
+            cwd=self.root,
+        )
+
+        payload = json.loads((self.root / "docs/service/generated/change-surface.json").read_text(encoding="utf-8"))
+        self.assertIn("package.json", payload["changed_files"])
+        self.assertEqual(["docs/service/VERIFY.md"], payload["triggers"][0]["update"])
+
+    def test_audit_warns_when_triggered_canon_update_is_missing(self) -> None:
+        subprocess.run(["git", "init"], check=True, cwd=self.root, capture_output=True, text=True)
+        subprocess.run(["git", "config", "user.email", "test@example.com"], check=True, cwd=self.root)
+        subprocess.run(["git", "config", "user.name", "Test User"], check=True, cwd=self.root)
+        (self.root / "package.json").write_text('{"scripts":{"test":"node test.js"}}\n', encoding="utf-8")
+        subprocess.run(["git", "add", "."], check=True, cwd=self.root)
+        subprocess.run(["git", "commit", "-m", "baseline"], check=True, cwd=self.root, capture_output=True, text=True)
+
+        (self.root / "package.json").write_text('{"scripts":{"test":"node test.js","lint":"eslint ."}}\n', encoding="utf-8")
+        subprocess.run(
+            ["bash", str(self.root / "bin" / "refresh_contour.sh"), str(self.root), "--base", "HEAD"],
+            check=True,
+            cwd=self.root,
+        )
+        subprocess.run(
+            ["bash", str(self.root / "bin" / "audit_contour.sh"), str(self.root)],
+            check=True,
+            cwd=self.root,
+        )
+
+        report = json.loads((self.root / "docs/service/generated/health-report.json").read_text(encoding="utf-8"))
+        self.assertIn(
+            "contour trigger fired but docs/service/VERIFY.md was not changed",
+            report["warnings"],
+        )
 
 
 if __name__ == "__main__":

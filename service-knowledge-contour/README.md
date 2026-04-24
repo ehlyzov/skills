@@ -47,9 +47,23 @@ To inspect stale contour candidates:
 ./bin/prune_contour.sh
 ```
 
+To update only the startup layer in a repository that already has a contour:
+
+```bash
+FORCE=1 ./bin/bootstrap.sh --startup-only
+```
+
+To refresh against a specific comparison base while also including staged and unstaged changes:
+
+```bash
+./bin/refresh_contour.sh --base origin/main
+```
+
 ## Notes
 
 - The scripts default to safe behavior. They do not overwrite existing canonical docs unless `FORCE=1` is passed to `bootstrap.sh`.
+- `--startup-only` updates only `AGENTS.md` and `CLAUDE.md`; use it for safe startup-template upgrades in repositories that already maintain `SERVICE_MAP.md` and `VERIFY.md`.
+- `refresh_contour.sh` includes committed changes from the selected base plus staged, unstaged, and untracked files.
 - Generated artifacts are rebuildable. Treat them as navigation and audit overlays, not source of truth.
 - `knowledge-gaps.yaml` is the only allowed registry for unresolved durable uncertainty.
 
