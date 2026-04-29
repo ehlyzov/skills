@@ -41,6 +41,21 @@ CONFIG_NAMES = {
 }
 CI_PATTERNS = [".github/workflows", ".gitlab-ci.yml", "Jenkinsfile", ".circleci", ".azure-pipelines"]
 ENTRYPOINT_NAMES = {"main.py", "app.py", "manage.py", "server.py", "index.js", "server.js", "main.ts", "main.go"}
+IGNORE_DIRS = {
+    ".git", ".gradle", ".idea", ".vscode", ".venv", "venv", "env",
+    "node_modules", "build", "dist", "out", "target", "vendor",
+    "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache",
+    ".tox", ".cache", "coverage", ".next", ".nuxt", ".turbo",
+    "kotlin-js-store",
+}
+
+def iter_files(base):
+    """Walk files under base, pruning IGNORE_DIRS in-place."""
+    import os
+    for dirpath, dirnames, filenames in os.walk(base):
+        dirnames[:] = [d for d in dirnames if d not in IGNORE_DIRS]
+        for name in filenames:
+            yield Path(dirpath) / name
 
 def git(*args):
     try:
@@ -67,9 +82,7 @@ if inside == "true":
     changed_files = sorted(changed)
 
 entrypoints = []
-for p in root.rglob('*'):
-    if not p.is_file():
-        continue
+for p in iter_files(root):
     rel = p.relative_to(root).as_posix()
     if p.name in ENTRYPOINT_NAMES:
         entrypoints.append(rel)
@@ -78,9 +91,7 @@ for p in root.rglob('*'):
 entrypoints = sorted(set(entrypoints))[:40]
 
 config_files = []
-for p in root.rglob('*'):
-    if not p.is_file():
-        continue
+for p in iter_files(root):
     rel = p.relative_to(root).as_posix()
     if p.name in CONFIG_NAMES or any(rel.startswith(x) for x in CI_PATTERNS):
         config_files.append(rel)
@@ -128,11 +139,9 @@ if inside == 'true':
         churn[top] = churn.get(top, 0) + 1
 
 danger = []
-for p in root.rglob('*'):
-    if not p.is_file():
-        continue
+for p in iter_files(root):
     rel = p.relative_to(root).as_posix()
-    if re.search(r'(migrations?|generated|vendor|dist|build|proto|schema|legacy)', rel, re.I):
+    if re.search(r'(migrations?|generated|proto|schema|legacy)', rel, re.I):
         danger.append(rel)
 danger = sorted(danger)[:60]
 

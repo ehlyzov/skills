@@ -42,6 +42,7 @@ class BootstrapContractTests(unittest.TestCase):
         self.assertIn("# Generated hotspots", hotspots)
 
     def test_russian_manual_edits_do_not_break_refresh_audit_or_prune(self) -> None:
+        (self.root / "main.py").write_text("# placeholder entrypoint\n", encoding="utf-8")
         (self.root / "docs/service/SERVICE_MAP.md").write_text(
             "\n".join(
                 [

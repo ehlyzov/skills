@@ -32,15 +32,53 @@ for p in required:
         err(f"empty required file: {p.relative_to(root)}")
 
 link_pattern = re.compile(r'`([^`]+)`')
+FILE_SUFFIXES = (
+    '.md', '.yaml', '.yml', '.json', '.txt', '.toml', '.lock',
+    '.kt', '.kts', '.java', '.ts', '.tsx', '.js', '.cjs', '.mjs',
+    '.py', '.go', '.rs', '.rb', '.sh', '.sql', '.proto', '.gradle',
+    '.xml', '.html', '.css',
+)
+COMMAND_PREFIXES = (
+    './gradlew', './mvnw', './bin/', 'gradle ', 'mvn ',
+    'npm ', 'npx ', 'pnpm ', 'yarn ',
+    'python ', 'python3 ', 'pip ', 'pytest', 'ruff', 'mypy',
+    'go ', 'cargo ', 'make ', 'bash ', 'sh ', 'zsh ',
+    'docker ', 'kubectl ', 'tar ', 'curl ', 'git ',
+    'cat ', 'echo ', 'rm ', 'cp ', 'mv ', 'mkdir ', 'ln ', 'ls ',
+    'java ', 'node ', 'deno ',
+)
+
+def is_path_candidate(token):
+    if any(c in token for c in (' ', '\t')):
+        return False
+    if '://' in token:
+        return False
+    if any(ch in token for ch in ('*', '?')):
+        return False
+    if '...' in token:
+        return False
+    if token.startswith(COMMAND_PREFIXES):
+        return False
+    if token.startswith(('-', '#', '@', '$', '<', '~')):
+        return False
+    if token.startswith('/'):
+        return False
+    if ':' in token:
+        return False
+    if not ('/' in token or token.endswith(FILE_SUFFIXES)):
+        return False
+    return True
+
 for doc in [root / 'AGENTS.md', root / 'CLAUDE.md', root / 'docs/service/SERVICE_MAP.md', root / 'docs/service/VERIFY.md']:
     if not doc.exists():
         continue
     text = doc.read_text(encoding='utf-8', errors='ignore')
     for match in link_pattern.findall(text):
-        if '/' in match or match.endswith(('.md', '.yaml', '.json')):
-            target = (root / match).resolve()
-            if not target.exists():
-                err(f"dead reference in {doc.relative_to(root)} -> {match}")
+        if not is_path_candidate(match):
+            continue
+        target = (root / match).resolve()
+        if not target.exists():
+            err(f"dead reference in {doc.relative_to(root)} -> {match}")
 
 agents = root / 'AGENTS.md'
 if agents.exists():
