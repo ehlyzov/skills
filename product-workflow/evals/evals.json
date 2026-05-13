@@ -1,0 +1,26 @@
+{
+  "skill_name": "product-workflow",
+  "evals": [
+    {
+      "id": 1,
+      "name": "pdf-from-existing-artifacts",
+      "prompt": "В репозитории /Users/eugene/repo/ladadigit/launchpad уже лежат продуктовое описание (docs/product/overview.md + docs/product/scenarios/) и два плана (docs/plans/launchpad-implementation-plan.md, docs/plans/launchpad-hardening-plan.md). Собери единый PDF со всеми артефактами и положи его в /tmp/eval-pdf-output/launchpad-product-docs.pdf. Используй скрипт скилла product-workflow для сборки.",
+      "expected_output": "Существует /tmp/eval-pdf-output/launchpad-product-docs.pdf, размер > 100KB, ≥ 50 страниц, открывается без ошибок.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "independent-verification",
+      "prompt": "В репозитории /Users/eugene/repo/ladadigit/launchpad лежат продуктовые артефакты (docs/product/) и два плана (docs/plans/launchpad-implementation-plan.md, docs/plans/launchpad-hardening-plan.md). Запусти финальную независимую верификацию артефактов через скилл product-workflow — независимый агент должен прочитать всё и вернуть вердикт о целостности и непротиворечивости. Сохрани его отчёт в /tmp/eval-verifier-output/verdict.md.",
+      "expected_output": "Файл /tmp/eval-verifier-output/verdict.md существует, содержит раздел 'Вердикт' с одним из двух вариантов (целостны / нестыковки), и список конкретных file:line при наличии замечаний.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "mini-product-authoring",
+      "prompt": "Спроектируй продуктовое описание для микро-продукта 'CLI-утилита для batch-rename файлов с поддержкой regex и dry-run'. Целевая аудитория — разработчики и DevOps. Используй скилл product-workflow для генерации overview.md + ровно 2 сценариев (scenario-01: переименование по regex; scenario-02: dry-run и preview). Только Phase 1 шаблон сценария — без Phase 2/3/4/5/6. Сохрани в /tmp/eval-mini-product/docs/product/. Каждый файл должен пройти scripts/verify_artifacts.py --phase scenarios.",
+      "expected_output": "Файлы /tmp/eval-mini-product/docs/product/{overview.md, scenarios/01-rename-by-regex.md, scenarios/02-dry-run-and-preview.md} существуют, проходят verify_artifacts.py.",
+      "files": []
+    }
+  ]
+}
