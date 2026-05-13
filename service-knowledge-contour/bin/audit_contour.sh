@@ -1,14 +1,37 @@
 #!/usr/bin/env bash
 set -euo pipefail
-ROOT="${1:-.}"
+ROOT="."
+STRICT="${STRICT:-0}"
 PYTHON_BIN="${PYTHON_BIN:-python3}"
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --strict)
+      STRICT="1"
+      shift
+      ;;
+    --)
+      shift
+      break
+      ;;
+    -*)
+      echo "unknown arg: $1" >&2
+      exit 2
+      ;;
+    *)
+      ROOT="$1"
+      shift
+      ;;
+  esac
+done
 mkdir -p "$ROOT/docs/service/generated"
+export STRICT
 
 "$PYTHON_BIN" - "$ROOT" <<'PY'
 import datetime as dt
-import json, re, sys
+import json, os, re, sys
 from pathlib import Path
 root = Path(sys.argv[1]).resolve()
+strict = os.environ.get('STRICT') == '1'
 gen = root / 'docs' / 'service' / 'generated'
 gen.mkdir(parents=True, exist_ok=True)
 required = [
@@ -179,12 +202,17 @@ if surface.exists():
                 if rel not in changed:
                     missing_updates.append(rel)
         for rel in sorted(set(missing_updates)):
-            warn(f'contour trigger fired but {rel} was not changed')
+            msg = f'contour trigger fired but {rel} was not changed'
+            if strict:
+                err(msg)
+            else:
+                warn(msg)
     except Exception:
         warn('change-surface.json could not be parsed for trigger drift checks')
 
 report = {
     'status': 'generated',
+    'strict': strict,
     'audit_ok': not errors,
     'errors': errors,
     'warnings': warnings,

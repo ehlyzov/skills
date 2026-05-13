@@ -4,7 +4,8 @@
 Использование:
     python3 verify_artifacts.py --phase scenarios <docs/product/>
     python3 verify_artifacts.py --phase plan      <docs/plans/>
-    python3 verify_artifacts.py --phase all       <repo-root>
+    python3 verify_artifacts.py --phase validation <repo-root>
+    python3 verify_artifacts.py --phase all        <repo-root>
 
 Phase scenarios:
     - 9 разделов в каждом scenarios/*.md.
@@ -17,6 +18,11 @@ Phase plan:
     - финальный grep по `^- \\*\\*Status:\\*\\*` находит ровно столько строк, сколько задач.
     - Depends on указывает на существующие задачи.
 
+Phase validation:
+    - существует docs/product/validation/verdict.md.
+    - verdict.md создан не раньше product/plans артефактов.
+    - verdict.md содержит разрешающий независимый вердикт.
+
 Phase all:
     - все вышеперечисленные проверки.
 """
@@ -28,15 +34,15 @@ import sys
 from pathlib import Path
 
 REQUIRED_SECTIONS_SCENARIO = [
-    "Problem",
-    "Goal",
-    "Non-goals",
-    "User flow",
-    "Functional requirements",
-    "Non-functional requirements",
-    "Architecture constraints",
-    "Acceptance criteria",
-    "Test plan",
+    ("Problem", "Проблема"),
+    ("Goal", "Цель"),
+    ("Non-goals", "Не входит в сценарий"),
+    ("User flow", "Пользовательский сценарий"),
+    ("Functional requirements", "Функциональные требования"),
+    ("Non-functional requirements", "Нефункциональные требования"),
+    ("Architecture constraints", "Архитектурные ограничения"),
+    ("Acceptance criteria", "Критерии приёмки"),
+    ("Test plan", "План проверки"),
 ]
 REQUIRED_USER_FLOW_SUBSECTIONS = [
     "Основной сценарий",
@@ -61,10 +67,11 @@ def check_scenario_file(path: Path) -> list[str]:
     text = path.read_text(encoding="utf-8")
     h2_headings = re.findall(r"^## ([^\n]+)$", text, re.MULTILINE)
     h3_headings = re.findall(r"^### ([^\n]+)$", text, re.MULTILINE)
-    for sec in REQUIRED_SECTIONS_SCENARIO:
-        if not any(h.strip() == sec for h in h2_headings):
-            issues.append(f"missing required section: {sec}")
-    if "User flow" in [h.strip() for h in h2_headings]:
+    normalized_h2 = [h.strip() for h in h2_headings]
+    for aliases in REQUIRED_SECTIONS_SCENARIO:
+        if not any(h in aliases for h in normalized_h2):
+            issues.append(f"missing required section: {aliases[0]} / {aliases[1]}")
+    if "User flow" in normalized_h2 or "Пользовательский сценарий" in normalized_h2:
         for sub in REQUIRED_USER_FLOW_SUBSECTIONS:
             # подсекция может иметь suffix-уточнение: "Основной сценарий: <details>"
             if not any(h.strip() == sub or h.strip().startswith(sub + ":") or h.strip().startswith(sub + " (") for h in h3_headings):
@@ -151,7 +158,7 @@ def check_plan_file(path: Path, prefix: str) -> int:
         rc = 1
         for i in issues:
             print(f"FAIL {i}")
-    # check Depends on points to existing IDs
+    # check Depends on points to existing IDs with the same prefix
     all_ids = set(re.findall(rf"^## ({prefix}\d+)\. ", text, re.MULTILINE))
     for tid_match in re.finditer(
         rf"^## ({prefix}\d+)\. .+?^- \*\*Depends on:\*\* ([^\n]+)$",
@@ -161,7 +168,7 @@ def check_plan_file(path: Path, prefix: str) -> int:
         tid, deps_line = tid_match.group(1), tid_match.group(2)
         deps = re.findall(rf"\b{prefix}\d+\b", deps_line)
         for d in deps:
-            if d not in all_ids and not d.startswith("T"):  # H may depend on T
+            if d not in all_ids:
                 rc = 1
                 print(f"FAIL {tid}: Depends on {d} — not found")
     if rc == 0:
@@ -173,9 +180,83 @@ def check_plan_file(path: Path, prefix: str) -> int:
     return rc
 
 
+def collect_task_ids(paths: list[Path], prefix: str) -> set[str]:
+    ids: set[str] = set()
+    for path in paths:
+        text = path.read_text(encoding="utf-8")
+        ids.update(re.findall(rf"^## ({prefix}\d+)\. ", text, re.MULTILINE))
+    return ids
+
+
+def check_hardening_t_dependencies(hardening_files: list[Path], implementation_files: list[Path]) -> int:
+    rc = 0
+    t_ids = collect_task_ids(implementation_files, "T")
+    if not t_ids:
+        print("FAIL hardening validation requires at least one implementation plan with T-tasks")
+        return 1
+    for path in hardening_files:
+        text = path.read_text(encoding="utf-8")
+        for tid_match in re.finditer(
+            r"^## (H\d+)\. .+?^- \*\*Depends on:\*\* ([^\n]+)$",
+            text,
+            re.MULTILINE | re.DOTALL,
+        ):
+            hid, deps_line = tid_match.group(1), tid_match.group(2)
+            t_deps = re.findall(r"\bT\d+\b", deps_line)
+            if not t_deps:
+                rc = 1
+                print(f"FAIL {hid}: Depends on must include at least one T-task")
+                continue
+            for dep in t_deps:
+                if dep not in t_ids:
+                    rc = 1
+                    print(f"FAIL {hid}: Depends on {dep} — not found in implementation plan")
+    if rc == 0:
+        print("OK   all H-task T-dependencies point to implementation tasks")
+    return rc
+
+
+def check_validation(repo_root: Path) -> int:
+    product_dir = repo_root / "docs" / "product"
+    plans_dir = repo_root / "docs" / "plans"
+    verdict = product_dir / "validation" / "verdict.md"
+    if not verdict.exists():
+        print(f"FAIL independent validation verdict is missing: {verdict}")
+        return 1
+
+    text = verdict.read_text(encoding="utf-8")
+    success_markers = [
+        "Артефакты целостны, непротиворечивы, замкнуты",
+        "Готовы к финальной упаковке",
+        "Реализованные сценарии пригодны",
+    ]
+    if not any(marker in text for marker in success_markers):
+        print("FAIL independent validation verdict does not contain an approved final verdict")
+        return 1
+
+    verdict_mtime = verdict.stat().st_mtime
+    stale_inputs: list[str] = []
+    for base in [product_dir, plans_dir]:
+        if not base.exists():
+            continue
+        for path in base.rglob("*.md"):
+            if path == verdict:
+                continue
+            if path.stat().st_mtime > verdict_mtime:
+                stale_inputs.append(path.relative_to(repo_root).as_posix())
+    if stale_inputs:
+        print("FAIL independent validation verdict is stale relative to:")
+        for rel in stale_inputs[:20]:
+            print(f"  - {rel}")
+        return 1
+
+    print("OK   independent validation verdict is present, approving, and fresh")
+    return 0
+
+
 def main() -> int:
     p = argparse.ArgumentParser()
-    p.add_argument("--phase", choices=["scenarios", "plan", "hardening", "all"], required=True)
+    p.add_argument("--phase", choices=["scenarios", "plan", "hardening", "validation", "all"], required=True)
     p.add_argument("path", help="path to docs/product/, docs/plans/, or repo root for --phase all")
     args = p.parse_args()
 
@@ -193,7 +274,11 @@ def main() -> int:
     if args.phase in ("plan", "all"):
         plans_dir = target if any(target.glob("*implementation-plan*.md")) else target / "docs" / "plans"
         if plans_dir.exists():
-            for f in plans_dir.glob("*implementation-plan*.md"):
+            implementation_files = sorted(plans_dir.glob("*implementation-plan*.md"))
+            if not implementation_files:
+                print(f"FAIL no implementation plan files in {plans_dir}")
+                rc = 1
+            for f in implementation_files:
                 rc |= check_plan_file(f, "T")
         else:
             print(f"FAIL no docs/plans/ found in {target}")
@@ -202,8 +287,22 @@ def main() -> int:
     if args.phase in ("hardening", "all"):
         plans_dir = target if any(target.glob("*hardening-plan*.md")) else target / "docs" / "plans"
         if plans_dir.exists():
-            for f in plans_dir.glob("*hardening-plan*.md"):
+            hardening_files = sorted(plans_dir.glob("*hardening-plan*.md"))
+            implementation_files = sorted(plans_dir.glob("*implementation-plan*.md"))
+            if not hardening_files:
+                print(f"FAIL no hardening plan files in {plans_dir}")
+                rc = 1
+            for f in hardening_files:
                 rc |= check_plan_file(f, "H")
+            if hardening_files:
+                rc |= check_hardening_t_dependencies(hardening_files, implementation_files)
+        else:
+            print(f"FAIL no docs/plans/ found in {target}")
+            rc = 1
+
+    if args.phase in ("validation", "all"):
+        repo_root = target if (target / "docs").exists() else target.parent
+        rc |= check_validation(repo_root)
 
     return rc
 

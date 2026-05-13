@@ -1,6 +1,6 @@
 ---
 name: service-knowledge-contour
-description: Bootstrap, refresh, audit, promote, and prune the minimal knowledge contour for a single service repository. Use this when a service repo lacks a stable agent/human operating model, when service knowledge has drifted, or when a change affects topology, verification, or operational risk. Do not use for ordinary feature work unless the change triggers a knowledge update.
+description: Use when bootstrapping, refreshing, auditing, pruning, or promoting durable knowledge for one service repository; when onboarding docs are missing or fragmented; or when topology, entrypoints, verification commands, integrations, risk zones, or operational knowledge changed. Not for ordinary feature work unless a contour trigger fired.
 ---
 
 # Purpose
@@ -46,6 +46,22 @@ It is not for:
 8. Do not preserve stale docs out of politeness.
 9. Prefer delete over archive unless history matters operationally.
 10. Do not invent commands, paths, boundaries, APIs, ownership, or verification results.
+
+# Autonomy boundaries
+
+The skill produces decision-support data; it must not silently make durable human decisions.
+
+| Action | Agent may do automatically | Needs human approval |
+| --- | --- | --- |
+| Create missing mandatory bootstrap files | yes, if absent | overwrite existing human-maintained canon |
+| Refresh generated layer | yes | treating generated output as canon |
+| Report stale canon candidates | yes | rewriting canon when evidence is ambiguous |
+| Promote transient learning | propose one home | committing the promoted decision or ADR as approved |
+| Prune docs | propose delete / merge / archive | deleting non-generated docs |
+| Create event-driven docs | draft when trigger evidence exists | making ADR/runbook/glossary canonical |
+| Accept expired gaps | no | yes, with owner and new expiry |
+
+Decision artifacts must include status, owner, approval source, date, alternatives, rationale, and evidence links. A generated overlay or audit warning is never source of truth by itself.
 
 # Canonical structure
 
@@ -337,7 +353,7 @@ Use when:
 - validating drift;
 - reviewing whether canonical knowledge is still usable.
 
-Generate reports and fail conditions.
+Generate reports and fail conditions. In CI or merge-gate contexts use strict mode (`STRICT=1 bin/audit_contour.sh` or `bin/audit_contour.sh --strict`) so missed contour-trigger updates fail instead of warning.
 
 Do not silently rewrite canon unless explicitly asked.
 
@@ -502,6 +518,8 @@ Audit must check:
 
 Audit is not optional in steady state.
 
+In strict mode, missed required canonical updates are errors. Use strict mode for CI, merge gates, and release readiness.
+
 # Execution flow
 
 ## Phase 1: inspect repository reality
@@ -568,6 +586,8 @@ Validate:
 - drift signals;
 - oversized canonical docs.
 
+For bootstrap, major refresh, or pre-merge validation, run an independent semantic verification pass with `agents/contour-verifier.md`. A clean-context verifier checks whether `SERVICE_MAP.md` and `VERIFY.md` would actually help a new agent localize changes and verify work. Treat the verifier output as review evidence, not automatic canon.
+
 ## Phase 6: final response
 
 Return:
@@ -618,6 +638,8 @@ Responsibilities:
 
 It must not create optional layers automatically just because they might help later.
 
+`--check` mode must refresh generated artifacts and fail if `docs/service/generated/*` changed. Use this in CI to catch stale generated overlays.
+
 ## `bin/audit_contour.sh`
 
 Responsibilities:
@@ -625,6 +647,7 @@ Responsibilities:
 - emit machine-readable failures or warnings;
 - fail on missing mandatory files, broken references, expired gaps, or severe drift.
 - warn when generated change-surface triggers require a canonical update but the corresponding canonical doc was not changed.
+- in strict mode, fail when generated change-surface triggers require a canonical update but the corresponding canonical doc was not changed.
 
 A fake audit script is worse than no audit script.
 

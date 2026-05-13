@@ -14,5 +14,5 @@ jobs:
         with:
           python-version: '3.11'
       - run: chmod +x bin/*.sh
-      - run: ./bin/refresh_contour.sh
-      - run: ./bin/audit_contour.sh
+      - run: ./bin/refresh_contour.sh --check
+      - run: ./bin/audit_contour.sh --strict

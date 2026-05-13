@@ -240,6 +240,39 @@ class BootstrapContractTests(unittest.TestCase):
             report["warnings"],
         )
 
+    def test_strict_audit_fails_when_triggered_canon_update_is_missing(self) -> None:
+        subprocess.run(["git", "init"], check=True, cwd=self.root, capture_output=True, text=True)
+        subprocess.run(["git", "config", "user.email", "test@example.com"], check=True, cwd=self.root)
+        subprocess.run(["git", "config", "user.name", "Test User"], check=True, cwd=self.root)
+        (self.root / "package.json").write_text('{"scripts":{"test":"node test.js"}}\n', encoding="utf-8")
+        subprocess.run(["git", "add", "."], check=True, cwd=self.root)
+        subprocess.run(["git", "commit", "-m", "baseline"], check=True, cwd=self.root, capture_output=True, text=True)
+
+        (self.root / "package.json").write_text('{"scripts":{"test":"node test.js","lint":"eslint ."}}\n', encoding="utf-8")
+        subprocess.run(
+            ["bash", str(self.root / "bin" / "refresh_contour.sh"), str(self.root), "--base", "HEAD"],
+            check=True,
+            cwd=self.root,
+        )
+
+        env = os.environ.copy()
+        env["STRICT"] = "1"
+        result = subprocess.run(
+            ["bash", str(self.root / "bin" / "audit_contour.sh"), str(self.root)],
+            check=False,
+            cwd=self.root,
+            env=env,
+            capture_output=True,
+            text=True,
+        )
+
+        self.assertNotEqual(0, result.returncode)
+        report = json.loads((self.root / "docs/service/generated/health-report.json").read_text(encoding="utf-8"))
+        self.assertIn(
+            "contour trigger fired but docs/service/VERIFY.md was not changed",
+            report["errors"],
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

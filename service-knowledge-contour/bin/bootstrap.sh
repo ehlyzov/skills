@@ -274,10 +274,10 @@ write_if_allowed "$ROOT/docs/service/generated/health-report.json" <<'EOD'
 EOD
 
 if [[ -x "$ROOT/bin/refresh_contour.sh" ]]; then
-  "$ROOT/bin/refresh_contour.sh" "$ROOT" || true
+  "$ROOT/bin/refresh_contour.sh" "$ROOT"
 fi
 if [[ -x "$ROOT/bin/audit_contour.sh" ]]; then
-  "$ROOT/bin/audit_contour.sh" "$ROOT" || true
+  "$ROOT/bin/audit_contour.sh" "$ROOT"
 fi
 
 echo "bootstrap complete"

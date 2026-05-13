@@ -1,0 +1,3 @@
+display_name: Product Workflow
+short_description: Product PRD, scenarios, decision gates, implementation plans, verification, and stakeholder PDFs.
+default_prompt: Use this skill to turn a product or major feature idea into approved Russian product scenarios, decision records, implementation and hardening plans, independent verification, and a stakeholder-facing PDF.

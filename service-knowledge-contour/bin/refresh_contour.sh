@@ -2,6 +2,7 @@
 set -euo pipefail
 ROOT="."
 BASE_REF=""
+CHECK="${CHECK:-0}"
 PYTHON_BIN="${PYTHON_BIN:-python3}"
 
 while [[ $# -gt 0 ]]; do
@@ -9,6 +10,10 @@ while [[ $# -gt 0 ]]; do
     --base)
       BASE_REF="$2"
       shift 2
+      ;;
+    --check)
+      CHECK="1"
+      shift
       ;;
     --)
       shift
@@ -168,6 +173,14 @@ PY
 
 if [[ -x "$ROOT/bin/audit_contour.sh" ]]; then
   "$ROOT/bin/audit_contour.sh" "$ROOT"
+fi
+
+if [[ "$CHECK" == "1" ]] && git -C "$ROOT" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  git -C "$ROOT" diff --exit-code -- docs/service/generated >/dev/null || {
+    echo "ERROR: generated contour artifacts are stale. Run bin/refresh_contour.sh and commit the result." >&2
+    git -C "$ROOT" diff --name-only -- docs/service/generated >&2 || true
+    exit 1
+  }
 fi
 
 echo "refresh complete"

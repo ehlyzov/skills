@@ -1,0 +1,3 @@
+display_name: Service Knowledge Contour
+short_description: Bootstrap, refresh, audit, promote, and prune a minimal knowledge layer for one service repository.
+default_prompt: Use this skill to create or maintain a small, high-signal service knowledge contour with startup docs, canonical service and verification docs, generated overlays, audits, promotion, and pruning.

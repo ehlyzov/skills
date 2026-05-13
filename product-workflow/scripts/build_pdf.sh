@@ -14,6 +14,9 @@
 #   PDF_TITLE     — заголовок на обложке (default: "<product> — Продуктовая документация").
 #   WORK_DIR      — временная директория (default: /tmp/product-workflow-pdf).
 #   CHROME_BIN    — путь до Google Chrome (default: macOS-стандартный).
+#   REQUIRE_VALIDATION       — 1 требует docs/product/validation/verdict.md (default: 1).
+#   INCLUDE_ENGINEERING_PLANS — 1 включает implementation/hardening планы (default: 0).
+#   PRODUCT_WORKFLOW_DRY_RUN — 1 собирает combined.md и завершает без HTML/PDF.
 #
 # Зависимости:
 #   - pandoc (рекомендуется) ИЛИ python3 + pip-пакет markdown
@@ -32,25 +35,36 @@ DOCS_PRODUCT="${DOCS_PRODUCT:-$REPO_ROOT/docs/product}"
 DOCS_PLANS="${DOCS_PLANS:-$REPO_ROOT/docs/plans}"
 PDF_TITLE="${PDF_TITLE:-Продуктовая документация}"
 WORK_DIR="${WORK_DIR:-/tmp/product-workflow-pdf}"
-
-# Найти Chrome
-if [[ -z "${CHROME_BIN:-}" ]]; then
-  if [[ "$(uname)" == "Darwin" ]]; then
-    CHROME_BIN="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
-  elif command -v google-chrome &>/dev/null; then
-    CHROME_BIN="$(command -v google-chrome)"
-  elif command -v chromium &>/dev/null; then
-    CHROME_BIN="$(command -v chromium)"
-  fi
-fi
-
-if [[ ! -x "$CHROME_BIN" ]]; then
-  echo "ERROR: Chrome не найден. Установите Google Chrome или задайте CHROME_BIN." >&2
-  exit 2
-fi
+REQUIRE_VALIDATION="${REQUIRE_VALIDATION:-1}"
+INCLUDE_ENGINEERING_PLANS="${INCLUDE_ENGINEERING_PLANS:-0}"
+PRODUCT_WORKFLOW_DRY_RUN="${PRODUCT_WORKFLOW_DRY_RUN:-0}"
+VALIDATION_FILE="$DOCS_PRODUCT/validation/verdict.md"
 
 # Проверить existence корня
 [[ -d "$DOCS_PRODUCT" ]] || { echo "ERROR: $DOCS_PRODUCT не существует" >&2; exit 3; }
+
+if [[ "$REQUIRE_VALIDATION" == "1" ]]; then
+  [[ -f "$VALIDATION_FILE" ]] || {
+    echo "ERROR: $VALIDATION_FILE не существует. Сначала запустите независимую верификацию." >&2
+    exit 5
+  }
+  if ! grep -Eq 'Артефакты целостны, непротиворечивы, замкнуты|Готовы к финальной упаковке|Реализованные сценарии пригодны' "$VALIDATION_FILE"; then
+    echo "ERROR: $VALIDATION_FILE не содержит разрешающий финальный вердикт." >&2
+    exit 6
+  fi
+  stale_inputs=()
+  while IFS= read -r f; do
+    [[ "$f" == "$VALIDATION_FILE" ]] && continue
+    if [[ "$f" -nt "$VALIDATION_FILE" ]]; then
+      stale_inputs+=("$f")
+    fi
+  done < <(find "$DOCS_PRODUCT" "$DOCS_PLANS" -type f -name '*.md' 2>/dev/null | sort)
+  if [[ "${#stale_inputs[@]}" -gt 0 ]]; then
+    echo "ERROR: $VALIDATION_FILE устарел относительно markdown-артефактов. Повторите независимую верификацию." >&2
+    printf '  %s\n' "${stale_inputs[@]:0:20}" >&2
+    exit 7
+  fi
+fi
 
 mkdir -p "$WORK_DIR"
 COMBINED_MD="$WORK_DIR/combined.md"
@@ -79,7 +93,14 @@ EOF
     echo
   fi
 
-  # 2. сценарии в порядке имени файла
+  # 2. журнал решений, если он есть
+  if [[ -f "$DOCS_PRODUCT/decisions.md" ]]; then
+    cat "$DOCS_PRODUCT/decisions.md"
+    echo
+    echo
+  fi
+
+  # 3. сценарии в порядке имени файла
   if [[ -d "$DOCS_PRODUCT/scenarios" ]]; then
     for f in "$DOCS_PRODUCT/scenarios"/*.md; do
       [[ -f "$f" ]] || continue
@@ -89,17 +110,20 @@ EOF
     done
   fi
 
-  # 3. план реализации (любой *-implementation-plan.md в DOCS_PLANS)
-  if [[ -d "$DOCS_PLANS" ]]; then
-    for f in "$DOCS_PLANS"/*implementation-plan*.md; do
-      [[ -f "$f" ]] || continue
-      cat "$f"
-      echo
-      echo
-    done
+  # 4. финальный независимый вердикт
+  if [[ -f "$VALIDATION_FILE" ]]; then
+    echo "# Итоговая независимая проверка"
+    echo
+    cat "$VALIDATION_FILE"
+    echo
+    echo
+  fi
 
-    # 4. план усиления
-    for f in "$DOCS_PLANS"/*hardening-plan*.md; do
+  # 5. инженерные планы только по явному запросу
+  if [[ "$INCLUDE_ENGINEERING_PLANS" == "1" && -d "$DOCS_PLANS" ]]; then
+    echo "# Инженерные приложения"
+    echo
+    for f in "$DOCS_PLANS"/*implementation-plan*.md "$DOCS_PLANS"/*hardening-plan*.md; do
       [[ -f "$f" ]] || continue
       cat "$f"
       echo
@@ -107,6 +131,27 @@ EOF
     done
   fi
 } > "$COMBINED_MD"
+
+if [[ "$PRODUCT_WORKFLOW_DRY_RUN" == "1" ]]; then
+  echo "DRY-RUN: combined markdown built at $COMBINED_MD"
+  exit 0
+fi
+
+# Найти Chrome
+if [[ -z "${CHROME_BIN:-}" ]]; then
+  if [[ "$(uname)" == "Darwin" ]]; then
+    CHROME_BIN="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+  elif command -v google-chrome &>/dev/null; then
+    CHROME_BIN="$(command -v google-chrome)"
+  elif command -v chromium &>/dev/null; then
+    CHROME_BIN="$(command -v chromium)"
+  fi
+fi
+
+if [[ ! -x "$CHROME_BIN" ]]; then
+  echo "ERROR: Chrome не найден. Установите Google Chrome или задайте CHROME_BIN." >&2
+  exit 2
+fi
 
 echo "[2/4] Markdown → HTML"
 if command -v pandoc &>/dev/null; then
