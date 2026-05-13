@@ -1,75 +1,52 @@
 # UX Continuity Author Agent
 
-Этот промпт передаётся агенту в Phase 2 для добавления раздела «Дополнительные сценарии и связь с продуктом» к каждому файлу сценария.
-
-## Промпт
+Use this prompt in Phase 2 to add the "Additional scenarios and product continuity" section to each scenario file.
 
 ```
-Ты — продуктовый автор. Контекст разговора недоступен — читай только файлы.
+You are a product writer. You have no conversation history. Read files only.
 
-## Что есть
+## Language Policy
 
-В `<DOCS_ROOT>/`:
+Write the added sections in the target artifact language. If the request, repository docs, or target product artifacts are Russian-language, write polished Russian prose. Keep code identifiers, paths, commands, endpoints, schemas, and proper nouns literal.
+
+## Inputs
+
+In `<DOCS_ROOT>/`:
+
 - `overview.md`
-- `scenarios/01..NN.md` — N сценариев по строгому шаблону.
+- `scenarios/01..NN.md`
 
-Прочитай **все** файлы перед тем, как начать писать. Без полного контекста ты не справишься: цель — связать сценарии в единое полотно.
+Read all files before writing. The goal is to connect scenarios into one coherent product experience.
 
-## Что нужно сделать
+## Task
 
-К **каждому из N сценариев** добавь в конце файла (после раздела `## Test plan`) новый раздел:
+For each scenario, append a final section after the test-plan section. Use the target artifact language for the heading. For Russian artifacts, use the established Russian heading for additional scenarios and product continuity.
 
+The section must be connected prose, not a list or table. Use 2-4 paragraphs per scenario.
+
+## The Section Must
+
+1. **Close the UX:** show where the user came from, where they go next, and what they do in parallel.
+2. **Describe additional journeys:** 1-2 realistic stories where this scenario connects with 1-3 others.
+3. **Identify complementary scenarios:** explain neighboring scenarios and how they complete each other.
+4. **Explain boundaries:** state where this scenario ends and hands control to another scenario.
+
+## Hard Requirements
+
+- Do not add new scenarios to overview or as files.
+- Do not add functionality, APIs, or UI pages.
+- Do not change existing scenario sections; append only the new section.
+- Use connected prose, not bullet lists as the main form.
+- Use markdown scenario links.
+- Target 200-400 words per scenario.
+- Use product tone without filler adjectives.
+- For growth scenarios, explain how they connect to current scenarios now and how the UX closes after implementation.
+
+## Return
+
+Apply edits directly. Then return a summary under 200 words:
+
+- what was added to each scenario;
+- 3-5 cross-scenario journeys you connected;
+- any weakly connected scenarios, without inventing links.
 ```
-## Дополнительные сценарии и связь с продуктом
-```
-
-Этот раздел — **связное повествование на естественном языке** (не списки ссылок, не таблицы — текст 2-4 абзаца). Цель раздела:
-
-1. **Замкнуть UX**: показать, что сценарий — не остров. Откуда пользователь пришёл (предыдущие сценарии), куда уходит (следующие), что делает параллельно.
-2. **Описать дополнительные user journeys**: 1-2 реалистичные «истории», в которых этот сценарий смыкается с 1-3 другими и формирует целостный flow.
-3. **Указать complementary сценарии**: какие соседние раскрывают близкий аспект, как взаимно дополняют.
-4. **Объяснить непротиворечивость**: явно сказать, где границы сценария и где он передаёт управление другим.
-
-## Жёсткие требования
-
-- **НЕ добавляй новых сценариев** в overview или в виде новых файлов.
-- **НЕ добавляй новой функциональности**, новых API, новых UI-страниц. Только переплетение существующих.
-- **НЕ изменяй существующие разделы** (Problem, Goal и т.д.). Только дописывай новый раздел в конце.
-- **Связное повествование** — не bullet-список. Внутри абзаца допустимы коротки маркеры, но не как основная форма.
-- **Ссылки на сценарии в формате markdown** — `[01 Onboarding](01-onboarding.md)` или `[03](03-debugging.md)`.
-- **Объём**: 200-400 слов на сценарий.
-- **Тон**: продуктовый, по-русски, без воды и эпитетов «удобно», «приятно», «современно».
-- Для **growth-сценариев** — отдельно проговори, как они интегрируются с current-сценариями уже сейчас (даже частично) и как полностью замкнут UX после реализации.
-
-## Что вернуть
-
-Применить правки прямо в файлы (Edit/Write). После завершения — короткое резюме (≤ 200 слов):
-- что добавлено в каждый сценарий (в одну строку);
-- 3-5 сквозных user journeys, которые ты «протянул» через документ;
-- если видишь сценарии, слабо связанные с остальными — отметь их (это сигнал автору, что-то могло быть упущено).
-
-## Дополнительно
-
-Помни: цель — не «расширить документацию», а **проявить уже существующие связи и сделать продукт целостным с точки зрения читателя**. Если сценарий слабо связан с остальными — отметь это, не выдумывай связи.
-```
-
-## Использование
-
-Псевдокод (harness-agnostic):
-
-```
-spawn_subagent(
-    description="<краткое описание>",
-    role="general-purpose",
-    prompt=<заполненный промпт выше>,
-)
-```
-
-В Claude — `Agent(subagent_type="general-purpose", prompt=...)`.
-В Codex — соответствующий механизм child-task.
-
-## После выполнения
-
-1. Прогнать `scripts/verify_artifacts.py` — проверка что у каждого scenario-файла есть раздел «Дополнительные сценарии и связь с продуктом».
-2. Прогнать scenario-critic — он валидирует bidirectional cross-refs и связность повествования.
-3. Если критик возвращает «нужны уточнения» — применить правки и прогнать снова до «всё хорошо».

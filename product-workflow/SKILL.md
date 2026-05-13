@@ -30,7 +30,7 @@ description: "Use when the user asks for product-level PRD, «продуктов
 
 ## Работа с пользователем
 
-Все продуктовые артефакты пишутся **на русском языке**. Английский допустим только для кода, команд, путей, API, имён библиотек и устойчивых собственных названий. Тон — продуктовый, без воды. Сценарии и планы — иммутабельные после approval (правки только через явный запрос).
+Все prompt-файлы агентов в `agents/` пишутся на английском. Язык итоговых артефактов выбирается по пользовательскому контексту: если запрос, существующие документы или целевые артефакты русскоязычные, агенты пишут хороший русский текст; если контекст английский, пишут по-английски. В русском продукте английский допустим только для кода, команд, путей, API, имён библиотек и устойчивых собственных названий. Тон — продуктовый, без воды. Сценарии и планы — иммутабельные после approval (правки только через явный запрос).
 
 Агент помогает принимать решения, но не подменяет пользователя:
 
@@ -188,7 +188,7 @@ description: "Use when the user asks for product-level PRD, «продуктов
 Цель: перед PDF сделать продуктовый текст цельным русскоязычным документом, а не смесью русских и английских рабочих терминов.
 
 Алгоритм:
-1. Запустить style-editor (см. [agents/style-editor.md](agents/style-editor.md)) на `docs/product/overview.md`, `docs/product/scenarios/*.md`, `docs/product/decisions.md` и `docs/product/validation/verdict.md`.
+1. Запустить language-specific style editor на `docs/product/overview.md`, `docs/product/scenarios/*.md`, `docs/product/decisions.md` и `docs/product/validation/verdict.md`: [agents/style-editor-ru.md](agents/style-editor-ru.md) для русскоязычного продукта или [agents/style-editor-en.md](agents/style-editor-en.md) для англоязычного.
 2. Правки применяются только к продуктовым формулировкам, структуре и стилю. Нельзя менять смысл, acceptance criteria, T/H-планы или инженерные команды.
 3. Английский оставить только в code/API/path/command/proper noun.
 4. После правок снова прогнать `scripts/verify_artifacts.py --phase scenarios <repo-root>`.
@@ -237,7 +237,8 @@ description: "Use when the user asks for product-level PRD, «продуктов
 | [agents/plan-critic.md](agents/plan-critic.md) | Промпт для критика T- и H-планов | Phase 3, 4 |
 | [agents/hardening-auditor.md](agents/hardening-auditor.md) | Промпт для аудитора-генератора H-задач | Phase 4 |
 | [agents/independent-verifier.md](agents/independent-verifier.md) | Финальный независимый валидатор | Phase 5 |
-| [agents/style-editor.md](agents/style-editor.md) | Финальная вычитка русского продуктового текста | Phase 6 |
+| [agents/style-editor-ru.md](agents/style-editor-ru.md) | Финальная вычитка русского продуктового текста | Phase 6 |
+| [agents/style-editor-en.md](agents/style-editor-en.md) | Финальная вычитка английского продуктового текста | Phase 6 |
 | [agents/implementation-verifier.md](agents/implementation-verifier.md) | Проверка пригодности реализованных сценариев | Phase 8 |
 | [agents/ux-continuity-author.md](agents/ux-continuity-author.md) | Автор раздела «Дополнительные сценарии и связь» | Phase 2 |
 | [scripts/build_pdf.sh](scripts/build_pdf.sh) | Сборка единого PDF | Phase 7 |

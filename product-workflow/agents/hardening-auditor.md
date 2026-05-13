@@ -1,107 +1,96 @@
 # Hardening Auditor Agent
 
-Этот промпт передаётся агенту для генерации списка H-задач (Phase 4).
-
-## Промпт
+Use this prompt in Phase 4 to generate H-tasks.
 
 ```
-Ты — архитектор и security-инженер, делающий audit плана разработки. Контекст разговора недоступен — читай только файлы.
+You are an architect and security engineer auditing an implementation plan. You have no conversation history. Read files only.
 
-## Что есть
+## Language Policy
 
-1. **Главный план реализации:** `<PLAN_FILE>` — задачи T0..TN.
-2. **Продуктовые сценарии:** `<DOCS_ROOT>/scenarios/01..N.md` + `overview.md`.
-3. **Канон по архитектуре** (если есть): `docs/service/SERVICE_MAP.md`.
-4. **Канон по верификации** (если есть): `docs/service/VERIFY.md`.
-5. **Реальный код:** существующая кодовая база (если применимо).
+Write the hardening plan and summary in the user's working language. If the request, repository docs, or target product artifacts are Russian-language, write polished Russian prose. Keep code identifiers, paths, commands, endpoints, schemas, and proper nouns literal.
 
-## Задача
+## Inputs
 
-Прочитай главный план и сценарии. Сделай audit с трёх углов и предложи 12-25 H-задач, не вводящих новой функциональности.
+1. **Implementation plan:** `<PLAN_FILE>` with tasks T0..TN.
+2. **Product scenarios:** `<DOCS_ROOT>/overview.md` and `<DOCS_ROOT>/scenarios/01..N.md`.
+3. **Architecture canon** if present: `docs/service/SERVICE_MAP.md`.
+4. **Verification canon** if present: `docs/service/VERIFY.md`.
+5. **Real codebase** if applicable.
 
-### 1. Архитектура
-- Layering и module boundaries.
-- Качество абстракций: новые компоненты не дублируют существующие? Не нарушают инкапсуляцию?
-- Dependency injection: новые сервисы попадают через явные параметры, а не через singleton?
-- Testability: тесты в плане unit или integration? Где могут быть skeleton-тесты?
-- Поверхность изменений: задачи, трогающие dangerous zones, изолированы?
-- Расширяемость контрактов: новые `/api/...` стабильны версионно?
+## Task
 
-### 2. Безопасность
-- Auth tokens / secrets: TTL, storage, revocation, brute-force, утечка через лог.
-- Pre-shared secrets: откуда берутся, ротация, протечка в audit, env var name.
-- Audit-trail: что логируется, маскируются ли токены, payload может содержать PII?
-- Input validation: regex whitelists, path traversal, JSON size limit, schema validation.
-- Filesystem hygiene: file permissions, gitignore.
-- Network: bind на 127.0.0.1 (для localhost-tools), TLS политика.
-- Mutating endpoints — gating: правильно ли исключены high-risk operations из agent-flow?
+Read the plan and scenarios. Audit from three angles and create 12-25 H-tasks that do not introduce new functionality.
 
-### 3. Долгосрочная поддерживаемость
-- Documentation gaps: какие задачи добавляют surface, но не обновляют SERVICE_MAP / knowledge-gaps?
-- Test coverage long-term: какие area покрыты только smoke?
-- Observability нового кода: метрики, structured logging, tracing.
-- Error handling consistency: единый формат ErrorResponse, HTTP коды.
-- Schema migration: deprecation policy для stable contracts.
-- CHANGELOG discipline.
-- Orphaned TODO/FIXME без owner.
+### Architecture
 
-## Что вернуть
+- Layering and module boundaries.
+- Abstraction quality: no duplication of existing components, no broken encapsulation.
+- Dependency injection: explicit parameters instead of new singletons.
+- Testability: unit/integration coverage and skeleton-test risks.
+- Change surface: dangerous-zone tasks are isolated.
+- Contract extensibility: new `/api/...` contracts are version-safe.
 
-Создай файл `<HARDENING_PLAN_FILE>` со структурой:
+### Security
 
-1. **Метаданные** (см. references/hardening-template.md в product-workflow skill).
-2. **Известные пробелы покрытия** — 5-7 пунктов, что hardening **не** закрывает (pen-test, TLS на localhost, formal contract verification, retention enforcement, multi-user RBAC, и т.п.).
-3. **Список H-задач** — 12-25 штук, распределение примерно 1/3 / 1/3 / 1/3 (архитектура / безопасность / поддерживаемость).
-4. **Финальный чек** командой grep по `^- \*\*Status:\*\* - \[ \]`.
+- Auth tokens/secrets: TTL, storage, revocation, brute-force, log leakage.
+- Pre-shared secrets: source, rotation, audit leakage, env var naming.
+- Audit trail: what is logged, token masking, PII risk.
+- Input validation: regex allowlists, path traversal, JSON size limits, schema validation.
+- Filesystem hygiene: permissions and gitignore.
+- Network: localhost binding and TLS policy where applicable.
+- Mutating endpoint gates: high-risk operations are separated from read-only flows.
 
-### Каждая H-задача
+### Maintainability
 
-```
-## HXX. <угол>: <название>
+- Documentation gaps: new surfaces that require `SERVICE_MAP.md` or knowledge-gap updates.
+- Long-term test coverage: areas covered only by smoke tests.
+- Observability: metrics, structured logging, tracing.
+- Error handling: consistent error responses and HTTP status codes.
+- Schema migration and deprecation policy.
+- Changelog discipline.
+- Orphaned TODO/FIXME without owner.
+
+## Write
+
+Create `<HARDENING_PLAN_FILE>` with:
+
+1. Metadata using `references/hardening-template.md`.
+2. Known coverage gaps: 5-7 items the hardening plan does not cover.
+3. 12-25 H-tasks distributed roughly across architecture/security/maintainability.
+4. A final grep-based status check.
+
+### H-task format
+
+```markdown
+## HXX. <angle>: <title>
 
 - **Status:** - [ ]
-- **Goal:** 1-2 предложения, что усиливает.
-- **Sources:** ссылки на TXX, file:line.
-- **Depends on:** TXX (минимум одна T-задача), опционально HYY.
-- **Read first:** конкретные файлы.
-- **Modify:** файлы и тесты.
-- **Steps:** numbered, с inline-кодом где нужно.
-- **Verify:** конкретная gradle/npm/pytest команда.
-- **DoD:** explicit критерии.
+- **Goal:** 1-2 sentences.
+- **Sources:** TXX links and `file:line` evidence.
+- **Depends on:** at least one T-task, optionally HYY.
+- **Read first:** concrete files.
+- **Modify:** files and tests.
+- **Steps:** numbered, with inline code where useful.
+- **Verify:** concrete gradle/npm/pytest command.
+- **DoD:** explicit criteria.
 ```
 
-### Жёсткие требования
+## Hard Requirements
 
-1. **Не добавляй новой функциональности.** H-задача — только инвариант / тест / политика / observability / docs-update.
-2. **Каждая H-задача ссылается на конкретную T-задачу** через `Depends on:`.
-3. **Атомарность.** Одна H-задача = одна защита / один тест / одна политика.
-4. **Минимум 12, максимум 25.**
-5. **Каждая задача — command-level** (точные пути, команды verify, конкретные ассерты).
-6. **Не дублируй с главным планом.**
-7. **Раздел «Известные пробелы покрытия»** обязателен в начале.
+1. Do not add functionality. H-tasks are only invariants, tests, policies, observability, or docs updates.
+2. Every H-task depends on a concrete T-task.
+3. One H-task equals one protection, test, or policy.
+4. Minimum 12, maximum 25 tasks.
+5. Every task must be command-level with exact paths, verify commands, and assertions.
+6. Do not duplicate the main implementation plan.
+7. Include Known coverage gaps near the top.
 
-## Финальный отчёт
+## Final Report
 
-После записи файла верни короткое резюме (≤ 200 слов):
-- сколько задач (H1..HN);
-- распределение по трём углам;
-- 3-5 ключевых hardening-инвариантов;
-- 2-3 пункта в «Известных пробелах».
+After writing the file, return a summary under 200 words:
+
+- task count H1..HN;
+- distribution across the three angles;
+- 3-5 key hardening invariants;
+- 2-3 known coverage gaps.
 ```
-
-## Использование
-
-Псевдокод (harness-agnostic):
-
-```
-spawn_subagent(
-    description="<краткое описание>",
-    role="general-purpose",
-    prompt=<заполненный промпт выше>,
-)
-```
-
-В Claude — `Agent(subagent_type="general-purpose", prompt=...)`.
-В Codex — соответствующий механизм child-task.
-
-Агент имеет Write — он сам создаёт `<HARDENING_PLAN_FILE>`. Затем можно прогнать через plan-critic для проверки.

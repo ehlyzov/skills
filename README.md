@@ -1,5 +1,7 @@
 # Knowledge Contour Skills
 
+Язык: **Русский** | [English](README.en.md)
+
 Репозиторий содержит готовые Codex skills: самодостаточные папки с `SKILL.md`,
 prompt-файлами для агентов, reference-документами, скриптами и проверками.
 
@@ -18,19 +20,19 @@ T/H-планы остаются инженерными артефактами.
 
 ```mermaid
 flowchart TD
-    U["User vision"] --> D["Phase 0: discovery agents"]
-    D --> DL["Decision log: proposed / approved / delegated"]
-    DL --> H{"Human approval?"}
-    H -->|approved| S["Scenarios + overview"]
-    H -->|needs choice| U
-    S --> C["Scenario critic loop"]
-    C --> P["Implementation plan"]
-    P --> HP["Hardening plan"]
-    HP --> V["Independent artifact verifier"]
-    V -->|blockers| C
-    V -->|approved verdict| E["Russian style editor"]
-    E --> PDF["Product PDF"]
-    P --> IV["Post-implementation verifier"]
+    U["Видение пользователя"] --> D["Фаза 0: агенты discovery"]
+    D --> DL["Журнал решений: proposed / approved / delegated"]
+    DL --> H{"Решение подтверждено человеком?"}
+    H -->|подтверждено| S["Сценарии + обзор"]
+    H -->|нужен выбор| U
+    S --> C["Цикл критики сценариев"]
+    C --> P["План реализации"]
+    P --> HP["План усиления"]
+    HP --> V["Независимая проверка артефактов"]
+    V -->|блокеры| C
+    V -->|вердикт принят| E["Редакторская вычитка"]
+    E --> PDF["Продуктовый PDF"]
+    P --> IV["Проверка после реализации"]
     HP --> IV
 ```
 
@@ -56,15 +58,15 @@ zones.
 
 ```mermaid
 flowchart TD
-    R["Repository reality"] --> B["bootstrap"]
-    B --> C["Canonical core"]
+    R["Реальное состояние репозитория"] --> B["Bootstrap"]
+    B --> C["Каноническое ядро"]
     C --> G["Generated layer"]
-    G --> A["audit / strict audit"]
-    A -->|trigger fired| H{"Human approval needed?"}
-    H -->|yes| P["promote / repair candidate"]
-    H -->|no| G
+    G --> A["Audit / strict audit"]
+    A -->|сработал trigger| H{"Нужно подтверждение человека?"}
+    H -->|да| P["Кандидат на promote / repair"]
+    H -->|нет| G
     P --> C
-    C --> V["Independent contour verifier"]
+    C --> V["Независимая проверка контура"]
     A --> PR["PR / CI evidence"]
 ```
 
@@ -171,6 +173,9 @@ python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py service-
 ## Правила поддержки
 
 - Канонический вход в каждый навык — `SKILL.md`.
+- Все prompt-файлы агентов в `agents/` пишутся на английском.
+- Если запрос навыка или целевые артефакты русскоязычные, агенты должны писать
+  итоговый пользовательский текст на хорошем русском языке.
 - Дополнительные материалы должны лежать рядом с навыком в `agents/`,
   `references/`, `scripts/`, `assets/`, `examples/`, `tests/` или `evals/`.
 - Не добавляйте README внутрь папок навыков без отдельной причины: описание

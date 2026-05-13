@@ -121,6 +121,8 @@ This skill may be invoked and operated in Russian or English.
 
 The contour model does not change by language.
 
+All agent prompt files in `agents/` are written in English. Agent reports must follow the user's working language: if the request or manually maintained repository docs are Russian-language, produce polished Russian prose while keeping paths, commands, config keys, JSON/YAML keys, and code identifiers literal.
+
 Keep these files and artifacts in English:
 
 - `AGENTS.md`
