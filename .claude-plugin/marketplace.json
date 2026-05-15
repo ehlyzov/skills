@@ -1,0 +1,26 @@
+{
+  "name": "knowledge-contour-skills",
+  "owner": {
+    "name": "ehlyzov"
+  },
+  "metadata": {
+    "description": "Product workflow and service knowledge contour skills for Claude Code.",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "product-workflow",
+      "source": "./product-workflow",
+      "strict": false,
+      "skills": "./",
+      "description": "End-to-end product shaping, scenarios, implementation planning, hardening, validation, and stakeholder PDF packaging."
+    },
+    {
+      "name": "service-knowledge-contour",
+      "source": "./service-knowledge-contour",
+      "strict": false,
+      "skills": "./",
+      "description": "Maintain a minimal service knowledge contour with canonical docs, generated overlays, audits, promotion, and pruning."
+    }
+  ]
+}

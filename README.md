@@ -115,6 +115,31 @@ test -f ~/.codex/skills/product-workflow/SKILL.md
 test -f ~/.codex/skills/service-knowledge-contour/SKILL.md
 ```
 
+## Install In Claude Code
+
+Add this repository as a Claude Code plugin marketplace:
+
+```text
+/plugin marketplace add ehlyzov/skills
+```
+
+or, with the full Git URL:
+
+```text
+/plugin marketplace add https://github.com/ehlyzov/skills.git
+```
+
+Then install one or both plugins from the marketplace:
+
+```text
+/plugin install product-workflow@knowledge-contour-skills
+/plugin install service-knowledge-contour@knowledge-contour-skills
+```
+
+The marketplace file is stored at `.claude-plugin/marketplace.json`, which is
+the path Claude Code expects when adding a GitHub repository as a plugin
+marketplace.
+
 ## Run Scripts
 
 Running scripts is separate from installing a skill.

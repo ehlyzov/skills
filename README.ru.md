@@ -125,6 +125,30 @@ test -f ~/.codex/skills/product-workflow/SKILL.md
 test -f ~/.codex/skills/service-knowledge-contour/SKILL.md
 ```
 
+## Установка в Claude Code
+
+Добавьте этот репозиторий как marketplace плагинов Claude Code:
+
+```text
+/plugin marketplace add ehlyzov/skills
+```
+
+или через полный Git URL:
+
+```text
+/plugin marketplace add https://github.com/ehlyzov/skills.git
+```
+
+Затем установите один или оба плагина из marketplace:
+
+```text
+/plugin install product-workflow@knowledge-contour-skills
+/plugin install service-knowledge-contour@knowledge-contour-skills
+```
+
+Файл marketplace хранится в `.claude-plugin/marketplace.json` — именно этот
+путь Claude Code ищет при добавлении GitHub-репозитория как plugin marketplace.
+
 ## Запуск скриптов
 
 Запуск скриптов не входит в установку навыка и выполняется отдельно.
