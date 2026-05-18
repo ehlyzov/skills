@@ -33,7 +33,7 @@
 
 ## Конвенции выполнения
 
-(те же 7 пунктов, что в implementation plan, плюс пункт «не правь главный план»)
+(те же пункты, что в implementation plan, включая `Product artifacts`, плюс пункт «не правь главный план»)
 
 ## Известные пробелы покрытия (план усиления НЕ закрывает)
 
@@ -45,7 +45,7 @@
 
 ## H1. Архитектура: <название>
 
-(тот же формат: Status / Goal / Sources / Depends on / Read first / Modify / Steps / Verify / DoD)
+(тот же формат: Status / Goal / Sources / Depends on / Read first / Modify / Product artifacts / Steps / Verify / DoD)
 
 ## H2. Безопасность: <название>
 ...

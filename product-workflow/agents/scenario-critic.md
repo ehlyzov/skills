@@ -15,6 +15,11 @@ In `<DOCS_ROOT>/`:
 
 - `overview.md`
 - `scenarios/01..NN.md`
+- optional `current-scenario-baseline.md`
+- optional `scenario-cards.md`
+- optional `scenario-graph.dot`
+- optional `increments/<feature>-pre-scan.md`
+- optional `increments/<feature>-impact.md`
 
 Each scenario has 9-10 sections. Preferred headings follow the target artifact language. For Russian artifacts, expected headings are Russian. Existing English headings may be accepted only when revising legacy artifacts.
 
@@ -28,9 +33,12 @@ Each scenario has 9-10 sections. Preferred headings follow the target artifact l
 2. **Cohesion:** cross-references are bidirectional; persona names match overview; goals are covered by acceptance criteria or NFR with the same numbers.
 3. **Consistency:** no scenario claims X while another claims not-X; no two scenarios claim the same scope with conflicting wording; metrics match overview.
 4. **UX closure:** every journey has a start and end; handoffs have receivers.
-5. **Adversarial quality:** run "what if X?" checks and see whether the documents answer them.
-6. **Realistic numbers:** latency/time budgets are plausible for the stack.
-7. **Style:** product prose is coherent in the target language; English remains only for code, paths, API, commands, and proper nouns.
+5. **Baseline fit:** if baseline/impact artifacts exist, every new or changed scenario is connected to an existing scenario through entry and exit/next-step links; no feature is documented as an island unless explicitly approved.
+6. **Scenario cards:** if `scenario-cards.md` exists, affected Sxx have user story, happy path, extension points, regression checks, and read-before evidence; impact documents cite specific cards/extension points.
+7. **Pre-scan:** if a pre-scan exists, candidate/rejected scenarios and cross-cutting checklist are reasoned, not decorative.
+8. **Adversarial quality:** run "what if X?" checks and see whether the documents answer them.
+9. **Realistic numbers:** latency/time budgets are plausible for the stack.
+10. **Style:** product prose is coherent in the target language; English remains only for code, paths, API, commands, and proper nouns.
 
 ## Report Format
 

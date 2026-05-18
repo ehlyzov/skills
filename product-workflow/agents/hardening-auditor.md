@@ -70,6 +70,7 @@ Create `<HARDENING_PLAN_FILE>` with:
 - **Depends on:** at least one T-task, optionally HYY.
 - **Read first:** concrete files.
 - **Modify:** files and tests.
+- **Product artifacts:** concrete baseline/cards/DOT/impact updates, or `No product artifact update because ...`.
 - **Steps:** numbered, with inline code where useful.
 - **Verify:** concrete gradle/npm/pytest command.
 - **DoD:** explicit criteria.
@@ -84,6 +85,7 @@ Create `<HARDENING_PLAN_FILE>` with:
 5. Every task must be command-level with exact paths, verify commands, and assertions.
 6. Do not duplicate the main implementation plan.
 7. Include Known coverage gaps near the top.
+8. Every H-task must include `Product artifacts`. Most H-tasks should use `No product artifact update because this hardening task only enforces an invariant, test, policy, observability, or documentation guard and does not change user-visible flow`; if it changes product docs, name the exact artifacts.
 
 ## Final Report
 

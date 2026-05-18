@@ -17,7 +17,7 @@
 
 ## Как читать задачу
 
-(скопируй описание полей: Status / Goal / Sources / Depends on / Read first / Modify / Steps / Verify / DoD)
+(скопируй описание полей: Status / Goal / Sources / Depends on / Read first / Modify / Product artifacts / Steps / Verify / DoD)
 
 ## Конвенции выполнения
 
@@ -28,6 +28,7 @@
 5. Verify обязан проходить.
 6. Каждая задача — один атомарный commit `feat(plan): TXX <название>` или `fix(plan): TXX ...`.
 7. Никогда не правь acceptance criteria сценариев.
+8. Каждая задача имеет `Product artifacts`: обновления baseline/cards/DOT/impact docs или явное `No product artifact update because ...`.
 
 ## Команды verify (общие)
 
@@ -63,6 +64,12 @@
 - **Modify:**
   - точные файлы — что создаём и что правим;
   - тестовые файлы.
+- **Product artifacts:**
+  - `docs/product/scenario-cards.md`: SXX extension point `<id>` — update/regression check/no change;
+  - `docs/product/current-scenario-baseline.md`: update/no change because ...;
+  - `docs/product/scenario-graph.dot`: update/no change because ...;
+  - `docs/product/increments/<feature>-impact.md`: update/no change because ...;
+  - или `No product artifact update because this task is internal-only and does not change user-visible flow, extension points, regression checks, scenario transitions, or product decisions.`
 - **Steps:**
   1. конкретный шаг с inline-кодом / командой;
   2. ...;
@@ -95,7 +102,8 @@ test "$unchecked" = "0" && echo PLAN-COMPLETE || { echo "outstanding tasks:"; gr
 
 ## Что критик проверяет
 
-- Все задачи имеют 9 обязательных полей (Status, Goal, Sources, Depends on, Read first, Modify, Steps, Verify, DoD).
+- Все задачи имеют 10 обязательных полей (Status, Goal, Sources, Depends on, Read first, Modify, Product artifacts, Steps, Verify, DoD).
+- Если задача меняет пользовательский flow, `Product artifacts` указывает конкретные baseline/cards/DOT/impact updates. Если не меняет — есть проверяемое объяснение `No product artifact update because ...`.
 - `Depends on:` — корректные ссылки на существующие задачи.
 - Verify-команда реалистична для текущего проекта (правильный gradle/npm/pytest синтаксис, правильный модуль).
 - Каждый Goal G1..GN из overview покрыт хотя бы одной T-задачей.

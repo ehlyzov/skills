@@ -5,13 +5,15 @@ description: "Use when the user asks for product-level PRD, «продуктов
 
 # Product Workflow
 
-Скилл ведёт продуктовую проработку «end-to-end»: от анализа продуктового пространства до полностью согласованных артефактов. На выходе пользователь получает пять согласованных пакетов:
+Скилл ведёт продуктовую проработку «end-to-end»: от анализа продуктового пространства до полностью согласованных артефактов. На выходе пользователь получает согласованные пакеты:
 
 1. **Продуктовое описание** (`docs/product/overview.md` + `docs/product/scenarios/01..N.md`) — задача, персоны, проблемы, цели, N сценариев по строгому шаблону.
 2. **Журнал решений** (`docs/product/decisions.md`) — варианты, факты, trade-offs, рекомендация агента и явный статус решения.
-3. **План реализации** (`docs/plans/<product>-implementation-plan.md`) — command-level задачи T0..TN для оркестратора + worker-а.
-4. **План усиления** (`docs/plans/<product>-hardening-plan.md`) — архитектура / безопасность / поддерживаемость, не добавляющая функционала; задачи H1..HN с зависимостями от T-задач.
-5. **Независимый вердикт и PDF** (`docs/product/validation/verdict.md` + PDF в `~/Downloads/`) — stakeholder-facing продуктовый документ без T/H-планов по умолчанию.
+3. **Baseline текущих сценариев** (`docs/product/current-scenario-baseline.md` + `docs/product/scenario-cards.md` + `docs/product/scenario-graph.dot`) — карта существующих сценариев, компактные пользовательские истории, страницы и переходы, если продукт уже существует или задача является доработкой.
+4. **Impact-документ инкремента** (`docs/product/increments/<feature>-impact.md`) — как новая фича расширяет, меняет или добавляет сценарии относительно baseline.
+5. **План реализации** (`docs/plans/<product>-implementation-plan.md`) — command-level задачи T0..TN для оркестратора + worker-а.
+6. **План усиления** (`docs/plans/<product>-hardening-plan.md`) — архитектура / безопасность / поддерживаемость, не добавляющая функционала; задачи H1..HN с зависимостями от T-задач.
+7. **Независимый вердикт и PDF** (`docs/product/validation/verdict.md` + PDF в `~/Downloads/`) — stakeholder-facing продуктовый документ без T/H-планов по умолчанию.
 
 После завершения работы запускается **независимый верификатор** — отдельный агент, читающий все артефакты и подтверждающий целостность и непротиворечивость. Его отчёт сохраняется в `docs/product/validation/verdict.md`. Без свежего разрешающего вердикта работа не считается законченной и PDF не собирается, кроме явного запроса пользователя «собери PDF без проверки».
 
@@ -19,6 +21,7 @@ description: "Use when the user asks for product-level PRD, «продуктов
 
 - Пользователь сказал: «нужно продуктовое описание», «PRD по фиче X», «спроектируй сценарии», «составь план реализации», «hardening plan», «оформи продукт».
 - Есть кодовая база и нужно зафиксировать её продуктовое лицо + roadmap.
+- Нужно встроить новую фичу или доработку в уже существующий продукт, не создавая сценарный «остров».
 - Есть идея/новый продукт без кода — нужно собрать целостную картину сценариев + план.
 - Пользователь хочет один артефакт-PDF для шеринга со стейкхолдерами.
 
@@ -78,12 +81,41 @@ description: "Use when the user asks for product-level PRD, «продуктов
 
 Подробности и templates — в `references/`. Промпты для агентов-критиков — в `agents/`. Скрипты сборки и проверки — в `scripts/`.
 
+## Режим `baseline`
+
+Используй режим `baseline`, когда продукт уже существует, когда пользователь просит доработку/новую фичу поверх существующего поведения, или когда сценарии должны стать устойчивой опорой для будущих инкрементов.
+
+Цель режима — зафиксировать текущие сценарии и заставить каждую новую фичу объяснять своё место в существующем пользовательском пути.
+
+Минимальные артефакты:
+
+- `docs/product/current-scenario-baseline.md` — текущие сценарии, страницы/команды/API, входы, выходы, known gaps.
+- `docs/product/scenario-cards.md` — компактные карточки Sxx: user story, happy path, extension points, regression checks, что читать перед планированием.
+- `docs/product/scenario-graph.dot` — явный граф страниц/сценариев и переходов в DOT. DOT — визуальная карта, не единственный источник продуктовой семантики.
+- `docs/product/increments/<feature>-pre-scan.md` — быстрый скрининг affected/rejected scenarios перед impact, если зона влияния неочевидна или фича cross-cutting.
+- `docs/product/increments/<feature>-impact.md` — только для инкремента: affected scenarios, added/changed flows, обновления FR/AC/Test plan, verification impact.
+
+Правила:
+
+- Новая фича не описывается как отдельный остров. Она должна быть классифицирована как `extends`, `changes`, `adds`, `splits`, `replaces` или `deprecates` относительно baseline.
+- Если фича добавляет новый сценарий, impact-документ обязан указать вход из существующего сценария и возврат/следующий шаг.
+- Если фича меняет существующий сценарий, нужно перечислить конкретные scenario cards, extension points, happy-path steps, regression checks и FR/AC/Test plan, которые меняются.
+- Перед планированием инкремента агент обязан открыть `scenario-cards.md`, найти affected Sxx и прочитать только их карточки плюс referenced evidence.
+- Если affected Sxx неясны, фича меняет широкую пользовательскую область или может затронуть cross-cutting areas, сначала создать `docs/product/increments/<feature>-pre-scan.md`, а не писать impact или план реализации. Cross-cutting areas: auth/session/legal, search/recall/navigation, settings/preferences/privacy, operator/admin/runtime. Для каждой области укажи `Baseline scenario` = Sxx или `N/A` с rationale.
+- Pre-scan обязан перечислить candidate affected scenarios, rejected scenarios с rationale, cross-cutting checklist, evidence opened и open decisions.
+- DOT фиксирует явные связи страниц/сценариев и, при необходимости, шаги продуктового инкремента через edge labels вроде `increment: <feature>`.
+- Для нового продукта без существующего поведения baseline создаётся после Phase 1 как первичная карта current/growth-сценариев; impact-документ не нужен, пока нет инкремента.
+- Для доработки существующего продукта baseline — preflight перед Phase 1/3: сначала найти или создать карту текущих сценариев, затем проектировать изменение.
+
+Шаблоны: [references/baseline-template.md](references/baseline-template.md), [references/scenario-card-template.md](references/scenario-card-template.md), [references/impact-pre-scan-template.md](references/impact-pre-scan-template.md) и [references/increment-impact-template.md](references/increment-impact-template.md).
+
 ## Phase gates
 
 | Фаза | Вход | Выход | Machine check | Human gate |
 | --- | --- | --- | --- | --- |
 | 0 | запрос пользователя + repo/идея | scope summary + `docs/product/decisions.md` | evidence paths в explorer-отчётах | подтверждение scope и решений |
 | 1 | approved/delegated scope | overview + сценарии | `scripts/verify_artifacts.py --phase scenarios <repo>` | подтверждение сценариев |
+| baseline | существующий продукт или approved сценарии | `current-scenario-baseline.md` + `scenario-cards.md` + `scenario-graph.dot` + optional increment impact | `--phase baseline`; для инкремента также `--phase pre-scan` и `--phase impact`; semantic связность проверяют scenario-critic + independent-verifier | подтверждение только при спорном impact |
 | 2 | сценарии Phase 1 | UX continuity во всех сценариях | `--phase scenarios` + scenario-critic | только при смысловых развилках |
 | 3 | approved сценарии | implementation plan + gap.yaml | `--phase plan` | подтверждение известных пробелов |
 | 4 | implementation plan | hardening plan | `--phase hardening` | подтверждение backlog/probes вне scope |
@@ -111,6 +143,7 @@ description: "Use when the user asks for product-level PRD, «продуктов
 - Число сценариев.
 - Соотношение current vs growth.
 - Persona-список.
+- Нужен ли режим `baseline`: продукт уже существует / это инкремент / это новый продукт без baseline.
 - Любая продуктовая развилка scope, найденная во время discovery.
 
 Если structured-механизм пользовательских вопросов недоступен, задай эти вопросы обычным Markdown-сообщением в чате и дождись ответа. Не продолжай работу в том же ходе после вопроса.
@@ -133,6 +166,8 @@ description: "Use when the user asks for product-level PRD, «продуктов
 4. По каждой смысловой развилке покажи человеку варианты, evidence, trade-offs, recommendation и impact. Не выбирай молча.
 5. Запиши scope-сводку (одним сообщением пользователю, перед стартом Phase 1) и дождись подтверждения.
 
+Если задача является инкрементом существующего продукта, не переходи к планированию реализации, пока не создан или не обновлён `current-scenario-baseline.md`, не прочитаны affected cards из `scenario-cards.md`, не создан pre-scan для неоднозначного/cross-cutting scope и не описан `<feature>-impact.md`.
+
 ## Phase 1 — Overview + N scenarios
 
 Цель: написать главный документ + N файлов сценариев по строгому шаблону.
@@ -149,6 +184,8 @@ description: "Use when the user asks for product-level PRD, «продуктов
    - Задать пользователю уточняющие вопросы по реальным развилкам через harness-механизм пользовательских вопросов (Claude `AskUserQuestion`, Codex — interactive prompt).
    - Повторять, пока критик не вернёт **«Всё хорошо»**.
 4. Запустить `scripts/verify_artifacts.py --phase scenarios <docs/product/>` для машинной проверки структуры (9 разделов, 3 user-flow подсекции, валидные cross-refs).
+5. Если включён режим `baseline`, создать или обновить `current-scenario-baseline.md`, `scenario-cards.md` и `scenario-graph.dot` по шаблону. Для инкремента дополнительно создать `docs/product/increments/<feature>-pre-scan.md` при неоднозначном/cross-cutting scope, затем `docs/product/increments/<feature>-impact.md` и связать их с изменёнными scenario-файлами/cards.
+6. Прогнать `scripts/verify_artifacts.py --phase baseline <docs/product/>`; для инкремента также `--phase pre-scan <docs/product/>` и `--phase impact <docs/product/>`. Machine-check валидирует структуру, поля, enum-значения и лёгкую Sxx-связность; продуктовый смысл остаётся за critic/verifier.
 
 Разворачивание Phase 1 обычно занимает 3-5 раундов критики. Не торопись закрыть фазу до явного «всё хорошо».
 
@@ -169,10 +206,12 @@ description: "Use when the user asks for product-level PRD, «продуктов
 
 Алгоритм:
 1. Создать `docs/plans/<product>-implementation-plan.md`. Первая задача — T0 gap-analysis: пройти все FR/AC сценариев, выводить `docs/plans/<product>-gap.yaml` со статусом каждого требования (`done` / `partial` / `missing`).
-2. Спроектировать оптимальную последовательность T-задач: foundation (общая инфра) → current scenario gap-fixes → growth → final verification. Зависимости — явный `Depends on:` в каждой задаче.
-3. Каждая задача — `## TXX. <название>` с фиксированной структурой: Status / Goal / Sources / Depends on / Read first / Modify / Steps / Verify / DoD. Steps содержит inline-код или конкретные команды.
-4. Запустить plan-critic (см. [agents/plan-critic.md](agents/plan-critic.md)) автоматически, в цикле, до «достаточно».
-5. Прогнать `scripts/verify_artifacts.py --phase plan <docs/plans/>` — проверка чекбоксов, формата, bidirectional file-refs.
+2. Если есть `docs/product/increments/<feature>-impact.md`, T0 gap-analysis обязан отдельно перечислить affected existing scenarios/cards, touched extension points и доказать, что regression/compatibility проверки старых путей учтены.
+3. Спроектировать оптимальную последовательность T-задач: foundation (общая инфра) → current scenario gap-fixes → impact changes for existing scenarios → growth/new scenarios → final verification. Зависимости — явный `Depends on:` в каждой задаче.
+4. Каждая задача — `## TXX. <название>` с фиксированной структурой: Status / Goal / Sources / Depends on / Read first / Modify / Product artifacts / Steps / Verify / DoD. Steps содержит inline-код или конкретные команды.
+5. `Product artifacts` обязателен. Если задача меняет пользовательский flow, он перечисляет обновления `scenario-cards.md`, `current-scenario-baseline.md`, `scenario-graph.dot`, scenario/impact docs. Если не меняет — явная строка `No product artifact update because ...`.
+6. Запустить plan-critic (см. [agents/plan-critic.md](agents/plan-critic.md)) автоматически, в цикле, до «достаточно».
+7. Прогнать `scripts/verify_artifacts.py --phase plan <docs/plans/>` — проверка чекбоксов, формата, bidirectional file-refs.
 
 ## Phase 4 — Hardening plan
 
@@ -197,6 +236,11 @@ description: "Use when the user asks for product-level PRD, «продуктов
    - Overview index ↔ scenario-файлы согласованы (1-к-1).
    - Persona в overview = персоны в шапках сценариев.
    - Цели G1..GN из overview покрыты в критериях приёмки/NFR хотя бы одного сценария с тем же числовым ориентиром.
+   - Если есть baseline: каждый сценарий в baseline представлен в `scenario-cards.md`, scenario-файлах или явно помечен как external/legacy; `scenario-graph.dot` не содержит висячих сценариев без объяснения.
+   - Если есть scenario cards: каждая current-карточка содержит user story, happy path, extension points, regression checks и read-before/evidence.
+   - Если есть pre-scan: candidate/rejected scenarios имеют rationale; cross-cutting checklist закрывает auth/session/legal, search/recall/navigation, settings/preferences/privacy, operator/admin/runtime через `Baseline scenario` = Sxx или `N/A` с rationale.
+   - Если есть increment impact: каждая новая фича классифицирована как `extends` / `changes` / `adds` / `splits` / `replaces` / `deprecates`; affected scenarios/cards обновлены в extension points, FR/AC/Test plan; новые сценарии имеют вход и возврат/следующий шаг.
+   - Implementation plan: каждая T-задача содержит `Product artifacts` и либо обновляет нужные baseline/cards/DOT/impact docs, либо объясняет `No product artifact update because ...`.
    - План: каждый FR/AC сценария попадает в gap.yaml; каждая T-задача либо реализует FR/AC, либо foundation.
    - Hardening: каждая H-задача имеет валидный `Depends on:` T-задачу; не вводит новой функциональности.
    - Cross-references двусторонни.
@@ -248,6 +292,10 @@ description: "Use when the user asks for product-level PRD, «продуктов
 | --- | --- | --- |
 | [references/scenario-template.md](references/scenario-template.md) | Полный шаблон одного сценария | Phase 1, перед написанием каждого scenario.md |
 | [references/overview-template.md](references/overview-template.md) | Структура overview.md | Phase 1, перед написанием overview |
+| [references/baseline-template.md](references/baseline-template.md) | Шаблон baseline текущих сценариев + DOT-графа | Режим `baseline`, перед инкрементом или после Phase 1 |
+| [references/scenario-card-template.md](references/scenario-card-template.md) | Шаблон компактных scenario cards для планирования инкрементов | Режим `baseline`, перед созданием impact-документа |
+| [references/impact-pre-scan-template.md](references/impact-pre-scan-template.md) | Шаблон pre-scan для выбора affected/rejected scenarios до impact | Режим `baseline`, когда affected Sxx неочевидны или фича cross-cutting |
+| [references/increment-impact-template.md](references/increment-impact-template.md) | Шаблон impact-документа для новой фичи/доработки | Режим `baseline`, когда задача является инкрементом |
 | [references/plan-template.md](references/plan-template.md) | Формат T-задачи + conventions для worker-а | Phase 3 |
 | [references/hardening-template.md](references/hardening-template.md) | Формат H-задачи и распределение углов | Phase 4 |
 | [references/decision-log-template.md](references/decision-log-template.md) | Формат журнала продуктовых решений | Phase 0 и все human gates |
@@ -274,5 +322,6 @@ description: "Use when the user asks for product-level PRD, «продуктов
 3. **Независимый верификатор — обязателен.** Без Phase 5 работа не считается завершённой. Это независимая пара глаз, защищающая от «слепых пятен» автора.
 4. **Решения не прятать в тексте.** Варианты и выбор фиксируются в `docs/product/decisions.md`; планы нельзя строить по неутверждённым решениям.
 5. **Иммутабельность сценариев.** После Phase 1 + критика, сценарии — иммутабельная цель для плана и hardening. Все изменения требуют явного запроса пользователя.
-6. **Сценарии не лезут в код, план не лезет в продуктовую ценность.** Сценарии описывают «что и зачем»; план — «как», на уровне команд и файлов; hardening — «что укрепить».
-7. **PDF — продуктовый артефакт для шеринга, а не источник правды.** Markdown — каноничен; PDF только генерируется из него и не коммитится. Implementation/hardening планы не попадают в PDF без явного запроса.
+6. **Инкремент встраивается в baseline.** Новая фича должна показать влияние на текущие сценарии; если влияния нет, это отдельный продуктовый остров и требует явного решения пользователя.
+7. **Сценарии не лезут в код, план не лезет в продуктовую ценность.** Сценарии описывают «что и зачем»; план — «как», на уровне команд и файлов; hardening — «что укрепить».
+8. **PDF — продуктовый артефакт для шеринга, а не источник правды.** Markdown — каноничен; PDF только генерируется из него и не коммитится. Implementation/hardening планы не попадают в PDF без явного запроса.

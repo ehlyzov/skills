@@ -20,6 +20,11 @@ In `<DOCS_ROOT>/`:
 - `overview.md`
 - `scenarios/01..NN.md`
 - `decisions.md`
+- optional `current-scenario-baseline.md`
+- optional `scenario-cards.md`
+- optional `scenario-graph.dot`
+- optional `increments/<feature>-pre-scan.md`
+- optional `increments/<feature>-impact.md`
 
 In `<PLANS_ROOT>/`:
 
@@ -35,6 +40,9 @@ In `<PLANS_ROOT>/`:
 - Persona names in overview match scenario headers case-sensitively.
 - Each Goal G1..GN from overview is covered in scenario acceptance criteria or NFR with the same numeric target.
 - Scenario cross-references are bidirectional.
+- If baseline artifacts exist, every current scenario in `current-scenario-baseline.md` is represented by a scenario file or explicitly marked `legacy`/`external`.
+- If `scenario-cards.md` exists, every current scenario in baseline has a card with user story, happy path, extension points, regression checks, and read-before evidence.
+- If `scenario-graph.dot` exists, every scenario node has an entry or predecessor and an exit or successor, unless the baseline explains why it is standalone.
 
 ### Consistency
 
@@ -54,6 +62,22 @@ In `<PLANS_ROOT>/`:
 - Every T-task has a valid `Depends on:`.
 - Inline code in steps is syntactically plausible.
 - Verify commands are realistic for the current stack.
+- If an increment impact document exists, affected existing scenarios have regression/compatibility verification in the T-plan, not only tasks for the new behavior.
+- Every T-task has `Product artifacts`, with concrete baseline/cards/DOT/impact updates or a credible `No product artifact update because ...` explanation.
+
+### Impact Pre-scan
+
+- If a pre-scan exists, candidate affected scenarios and rejected scenarios have rationale.
+- Cross-cutting checklist covers auth/session/legal, search/recall/navigation, settings/preferences/privacy, and operator/admin/runtime. Each area names a baseline scenario Sxx or `N/A` with rationale.
+- `maybe` items are either resolved in the impact document or listed as open decisions.
+
+### Increment Impact
+
+- Every new feature is classified as `extends`, `changes`, `adds`, `splits`, `replaces`, or `deprecates` relative to baseline.
+- Affected scenario cards and touched extension points are named explicitly.
+- New scenarios have an entry from an existing scenario and a return/next step.
+- Changed scenarios list concrete FR/AC/Test plan updates.
+- DOT edges introduced by the increment match the described affected/added scenarios.
 
 ### Hardening Plan
 

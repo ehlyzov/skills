@@ -10,13 +10,17 @@ with `SKILL.md`, agent prompt files, references, scripts, and tests.
 ### `product-workflow`
 
 End-to-end product shaping: discovery, decision log, PRD, user scenarios,
-implementation plan, hardening plan, independent verification, editorial pass,
-and stakeholder-facing PDF.
+current-scenario baseline, feature impact analysis, implementation plan,
+hardening plan, independent verification, editorial pass, and stakeholder-facing
+PDF.
 
 Use it for product or feature descriptions, roadmap validation, scenario design,
-and implementation planning. By default, the PDF includes only the product
-problem, scenarios, chosen solution, and independent verdict; T/H plans remain
-engineering artifacts.
+and implementation planning. For existing products, the `baseline` mode captures
+current scenarios as `current-scenario-baseline.md`, `scenario-cards.md`, and
+`scenario-graph.dot`; new increments then declare affected scenarios through
+pre-scan and impact artifacts before implementation planning. By default, the
+PDF includes only the product problem, scenarios, chosen solution, and
+independent verdict; T/H plans remain engineering artifacts.
 
 ```mermaid
 flowchart TD
@@ -25,8 +29,10 @@ flowchart TD
     DL --> H{"Human approval?"}
     H -->|approved| S["Scenarios + overview"]
     H -->|needs choice| U
-    S --> C["Scenario critic loop"]
-    C --> P["Implementation plan"]
+    S --> B["Baseline: scenario cards + DOT graph"]
+    B --> I["Increment pre-scan + impact"]
+    I --> C["Scenario critic loop"]
+    C --> P["Implementation plan with Product artifacts"]
     P --> HP["Hardening plan"]
     HP --> V["Independent artifact verifier"]
     V -->|blockers| C
@@ -40,8 +46,11 @@ Contents:
 
 - `SKILL.md` — main workflow and gates.
 - `agents/` — discovery, critic, verifier, and style-editor prompts.
-- `references/` — templates for scenarios, overview, decision log, plans, and PDF.
-- `scripts/verify_artifacts.py` — structural checks and validation gate.
+- `references/` — templates for scenarios, baseline, scenario cards,
+  increment pre-scan/impact, decision log, plans, and PDF.
+- `scripts/verify_artifacts.py` — structural checks for scenarios,
+  baseline/pre-scan/impact artifacts, plans, hardening plans, and validation
+  gate.
 - `scripts/build_pdf.sh` — PDF assembly with mandatory independent validation.
 - `evals/` — expected-behavior eval set.
 
@@ -149,8 +158,24 @@ the installed skill:
 
 ```bash
 python3 product-workflow/scripts/verify_artifacts.py --phase scenarios <repo-root>
+python3 product-workflow/scripts/verify_artifacts.py --phase baseline <repo-root>
+python3 product-workflow/scripts/verify_artifacts.py --phase pre-scan <repo-root>
+python3 product-workflow/scripts/verify_artifacts.py --phase impact <repo-root>
+python3 product-workflow/scripts/verify_artifacts.py --phase plan <repo-root>
+python3 product-workflow/scripts/verify_artifacts.py --phase hardening <repo-root>
 python3 product-workflow/scripts/verify_artifacts.py --phase validation <repo-root>
 bash product-workflow/scripts/build_pdf.sh <repo-root> ~/Downloads/product-docs.pdf
+```
+
+`--phase pre-scan` and `--phase impact` are explicit increment checks: they
+require corresponding files under `docs/product/increments/`. `--phase all`
+accepts a baseline-only product snapshot with no active increment files.
+
+New T/H plans must include `Product artifacts` in every task. Existing legacy
+plans can be checked during migration with:
+
+```bash
+python3 product-workflow/scripts/verify_artifacts.py --phase all <repo-root> --allow-legacy-plan
 ```
 
 `build_pdf.sh` requires a fresh `docs/product/validation/verdict.md` by default
