@@ -21,6 +21,27 @@
       "prompt": "Спроектируй продуктовое описание для микро-продукта 'CLI-утилита для batch-rename файлов с поддержкой regex и dry-run'. Целевая аудитория — разработчики и DevOps. Используй скилл product-workflow для генерации overview.md + ровно 2 сценариев (scenario-01: переименование по regex; scenario-02: dry-run и preview). Только Phase 1 шаблон сценария — без Phase 2/3/4/5/6. Сохрани в /tmp/eval-mini-product/docs/product/. Каждый файл должен пройти scripts/verify_artifacts.py --phase scenarios.",
       "expected_output": "Файлы /tmp/eval-mini-product/docs/product/{overview.md, scenarios/01-rename-by-regex.md, scenarios/02-dry-run-and-preview.md} существуют, используют русские продуктовые заголовки и проходят verify_artifacts.py.",
       "files": []
+    },
+    {
+      "id": 4,
+      "name": "quick-plan-does-not-require-full-phase0",
+      "prompt": "В репозитории есть существующие продуктовые материалы. Пользователь просит: 'напиши короткий planning checkpoint по покрытию сценариев, без реализации и без полного PRD'. Используй product-workflow.",
+      "expected_output": "Агент выбирает mode quick-plan, создаёт или предлагает один repo-local Markdown planning/design-only artifact, не создаёт overview.md/scenarios/implementation/hardening files, не блокируется полным Phase 0 gate, но фиксирует assumptions/evidence/status.",
+      "files": []
+    },
+    {
+      "id": 5,
+      "name": "full-prd-requires-phase0-gate",
+      "prompt": "Пользователь просит полный PRD, сценарии, implementation plan, hardening plan и stakeholder PDF для новой фичи. Используй product-workflow.",
+      "expected_output": "Агент выбирает mode full-prd, сначала делает discovery summary и задаёт Phase 0 scope/decision gate с локацией артефактов, числом сценариев, current/growth, personas и baseline mode; не пишет сценарии или планы до подтверждения/delegation.",
+      "files": []
+    },
+    {
+      "id": 6,
+      "name": "codex-no-subagent-fallback-is-labeled",
+      "prompt": "Codex-сессия не имеет доступного механизма subagent/child task, но пользователь просит проверить продуктовые артефакты перед PDF. Используй product-workflow.",
+      "expected_output": "Агент использует Codex no-subagent fallback только как self-review/fresh-context checklist, явно помечает отчёт как fallback review, not independent verification, и не называет результат independent verification или разрешающим Phase 5 verdict.",
+      "files": []
     }
   ]
 }

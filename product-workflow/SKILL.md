@@ -55,6 +55,15 @@ description: "Use when the user asks for product-level PRD, «продуктов
 
 Если harness не поддерживает одну из возможностей (например, нет structured AskUserQuestion) — fallback на простой текстовый вопрос с явным маркером `?` и ожиданием ответа в чате.
 
+### Codex no-subagent fallback
+
+Если Codex-сессия не даёт реального механизма отдельного subagent / fresh child task, не имитируй независимость.
+
+- Такой проход must be labeled as fallback.
+- Такой проход must not be called independent verification.
+- Используй self-review / fresh-context checklist только как временный safety net: перечитай артефакты с начала, проверь чек-лист соответствующей фазы, сохрани отчёт с явной пометкой `Fallback review, not independent verification`.
+- Для Phase 5, Phase 8 и PDF gate настоящий независимый verifier остаётся предпочтительным и обязательным, если tool/harness его поддерживает.
+
 ## Высокоуровневый поток
 
 Скилл ведёт пользователя через 9 фаз. Между фазами — обязательно подтверждение от пользователя через harness-механизм пользовательских вопросов (Claude `AskUserQuestion`, Codex — interactive prompt) на критических развилках (scope, локация, число сценариев, growth-направления, выбор решения).
@@ -80,6 +89,21 @@ description: "Use when the user asks for product-level PRD, «продуктов
 ```
 
 Подробности и templates — в `references/`. Промпты для агентов-критиков — в `agents/`. Скрипты сборки и проверки — в `scripts/`.
+
+## Codex operating modes
+
+Выбирай самый лёгкий режим, который закрывает запрос пользователя. Не запускай полный pipeline только потому, что скилл умеет полный pipeline.
+
+| Mode | Use when | Required output | Gate rule |
+| --- | --- | --- | --- |
+| `quick-plan` | Пользователь просит «напиши план», «сформулируй», planning checkpoint или design-only artifact без реализации | Один repo-local Markdown artifact с evidence, статусом, assumptions и next steps | Phase 0 gate is mandatory only for unresolved product decisions; it does not block quick-plan when the user explicitly asked for a small planning artifact |
+| `baseline-only` | Нужно зафиксировать текущие сценарии существующего продукта | `current-scenario-baseline.md`, `scenario-cards.md`, `scenario-graph.dot` | Human gate только при спорных current/growth классификациях |
+| `increment-impact` | Нужно встроить фичу/доработку в существующий baseline | pre-scan при неоднозначности + `<feature>-impact.md` | Не переходить к implementation plan без affected Sxx или явного `N/A` rationale |
+| `full-prd` | Нужен полный PRD / продуктовая проработка / stakeholder package | Phase 0..7 по основному потоку | Phase 0 gate is mandatory before scenarios, implementation plan, hardening plan, or PDF |
+| `pdf-package` | Артефакты уже есть, нужно только собрать stakeholder PDF | PDF через `scripts/build_pdf.sh` | Требуется свежий разрешающий verdict, если пользователь явно не попросил bypass |
+| `post-implementation-check` | Реализация T/H-плана завершена или нужна release readiness проверка | `implementation-verdict.md` + реальные команды проверки | Не утверждать готовность при critical/major blockers |
+
+Для `quick-plan` не создавай `overview.md`, scenario-файлы, implementation plan или hardening plan, если пользователь не попросил их явно. Такой артефакт должен быть помечен как planning/design-only, если поведение не проверялось тестами или runtime evidence.
 
 ## Режим `baseline`
 

@@ -322,6 +322,24 @@ Must include, where possible:
 
 Use the lightest mode that solves the real problem.
 
+## Mode 0: task-preflight
+
+Use when:
+- the user is doing ordinary feature work, debugging, review, or implementation in a repo that already has a contour;
+- the task may need service context, verification commands, risk zones, or contour-trigger awareness;
+- no explicit request was made to bootstrap, refresh, audit, promote, or prune durable knowledge.
+
+Do:
+- read `AGENTS.md`, `CLAUDE.md`, `docs/service/SERVICE_MAP.md`, `docs/service/VERIFY.md`, and `docs/service/knowledge-gaps.yaml` when present;
+- identify likely change surface, dangerous zones, verification path, and whether a contour trigger may fire;
+- report the trigger expectation in the task summary or final response.
+
+Do not:
+- do not bootstrap or refresh the contour;
+- do not create generated overlays;
+- do not copy scripts into the target repo;
+- do not rewrite canonical docs unless the user explicitly asks for a contour mode or a real trigger becomes part of the requested work.
+
 ## Mode 1: bootstrap
 
 Use when:
@@ -612,6 +630,8 @@ The skill must add or maintain these scripts:
 - `bin/audit_contour.sh`
 - `bin/promote_learning.sh`
 - `bin/prune_contour.sh`
+
+These scripts are mandatory for this skill package and for repositories that choose to operate the full contour toolchain. During `task-preflight`, lightweight audits, or read-only planning, do not copy or install bin/* into a target service unless the user asked to install/repair the contour toolchain or bootstrap mode is active. A target service can still benefit from existing `SERVICE_MAP.md` / `VERIFY.md` without receiving every support script in that task.
 
 ## `bin/bootstrap.sh`
 
