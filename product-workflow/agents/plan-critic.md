@@ -41,6 +41,15 @@ Answer this question: are the tasks complete, consistent, and sufficiently conte
 7. **Task size:** medium blocks, not 5-hour tasks and not 5-minute noise.
 8. **Execution conventions:** conventions do not contradict tasks.
 9. **Final check:** the final grep/status command works for the file structure.
+10. **Outcome-first sequence:** the first incomplete T-task produces an
+    acceptance-bearing vertical slice, or at most one preceding enabler proves
+    why the slice is impossible without it and names that slice as consumer.
+11. **Ownership:** enabling and assurance tasks do not implement contracts,
+    telemetry, retry logic, gates, or infrastructure owned by future tasks.
+12. **Gate locality:** a gate blocks only the artifact, claim, or unsafe action
+    it protects; missing measurement cannot block unrelated implementation.
+13. **Whole-contour budget:** when budgets exist, they include orchestration,
+    producer, verifier, and one repair, with a stop-loss before the ceiling.
 
 ## Report Format
 
@@ -72,6 +81,8 @@ Sort critical, major, minor.
 - Maximum 1200 words.
 - Do not propose new tasks; if coverage is missing, report the gap.
 - Do not repeat previous-round findings.
+- Do not request foundation, manifests, schemas, controllers, or observability
+  without naming the immediate consumer and concrete risk they address.
 - Be concrete: task ID and `file:line` are mandatory.
 - If the plan is sufficient, say so plainly.
 ```
@@ -79,5 +90,8 @@ Sort critical, major, minor.
 ## Stop Conditions
 
 - If the critic says the plan is complete, close the phase.
-- If three consecutive rounds are complete with only micro-notes, apply cosmetic fixes and stop.
-- If five rounds produce new critical findings, ask the user for a structural decision.
+- After blocking findings are fixed, recheck only changed tasks and affected
+  dependencies; do not reread the full package.
+- Non-blocking micro-notes do not trigger another round.
+- If the targeted recheck finds a new structural contradiction, ask the user
+  for a scope decision instead of starting another automatic cycle.

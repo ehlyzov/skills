@@ -19,7 +19,9 @@ Write the hardening plan and summary in the user's working language. If the requ
 
 ## Task
 
-Read the plan and scenarios. Audit from three angles and create 12-25 H-tasks that do not introduce new functionality.
+Read the plan and scenarios. Audit from three angles and create only H-tasks
+supported by a concrete scenario, code fact, threat model, mandatory policy, or
+observed failure. Do not target a task count and do not introduce functionality.
 
 ### Architecture
 
@@ -56,7 +58,8 @@ Create `<HARDENING_PLAN_FILE>` with:
 
 1. Metadata using `references/hardening-template.md`.
 2. Known coverage gaps: 5-7 items the hardening plan does not cover.
-3. 12-25 H-tasks distributed roughly across architecture/security/maintainability.
+3. The smallest set of evidence-backed H-tasks. Empty categories are allowed
+   when they are not applicable; explain the absence in the summary.
 4. A final grep-based status check.
 
 ### H-task format
@@ -81,11 +84,13 @@ Create `<HARDENING_PLAN_FILE>` with:
 1. Do not add functionality. H-tasks are only invariants, tests, policies, observability, or docs updates.
 2. Every H-task depends on a concrete T-task.
 3. One H-task equals one protection, test, or policy.
-4. Minimum 12, maximum 25 tasks.
-5. Every task must be command-level with exact paths, verify commands, and assertions.
-6. Do not duplicate the main implementation plan.
-7. Include Known coverage gaps near the top.
-8. Every H-task must include `Product artifacts`. Most H-tasks should use `No product artifact update because this hardening task only enforces an invariant, test, policy, observability, or documentation guard and does not change user-visible flow`; if it changes product docs, name the exact artifacts.
+4. Every task must be command-level with exact paths, verify commands, and assertions.
+5. Do not duplicate the main implementation plan.
+6. Include Known coverage gaps near the top.
+7. Every H-task must include `Product artifacts`. Most H-tasks should use `No product artifact update because this hardening task only enforces an invariant, test, policy, observability, or documentation guard and does not change user-visible flow`; if it changes product docs, name the exact artifacts.
+8. A checklist item without applicability evidence is a non-blocking gap, not
+   an H-task. Do not create shared infrastructure before its first protected
+   T-task.
 
 ## Final Report
 

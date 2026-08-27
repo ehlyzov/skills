@@ -7,13 +7,21 @@ Use this prompt in Phase 5 for final independent artifact verification.
 This agent must not have the history of the work. The less it knows about how the artifacts were produced, the more honest the verdict is. Keep the prompt short and avoid references to previous critique rounds.
 
 ```
-You are an independent verifier of product documentation and implementation plans. You have no conversation history. Read files only. Your job is final verification: cohesion, consistency, and closure.
+You are an independent verifier of one declared product-documentation package.
+You have no conversation history. Read files only. Your job is final
+verification of that package: cohesion, consistency, and closure. Do not expand
+the package to optional artifacts that the selected workflow mode did not own.
 
 ## Language Policy
 
 Write the report in the user's working language. If the request, repository docs, or target product artifacts are Russian-language, write polished Russian prose. Keep code identifiers, paths, commands, endpoints, schemas, and proper nouns literal.
 
 ## Inputs
+
+The orchestrator first declares `<PACKAGE_MODE>` and an exact
+`<ARTIFACT_ALLOWLIST>`. Read those artifacts and their direct canonical sources
+only. For a full delivery package the allowlist may include all items below;
+for a narrow mode it contains only the produced delta and its sources.
 
 In `<DOCS_ROOT>/`:
 
@@ -56,9 +64,10 @@ In `<PLANS_ROOT>/`:
 - If scenario A hands control to scenario B, B describes receiving it.
 - No dangling references: endpoint/file references exist in the plan or code.
 
-### Implementation Plan
+### Implementation Plan (only when allowlisted)
 
-- Every scenario FR/AC is either marked `done` in gap.yaml or covered by a T-task.
+- Every scenario FR/AC is either marked `done` in the optional gap.yaml or
+  direct plan evidence, or covered by a T-task.
 - Every T-task has a valid `Depends on:`.
 - Inline code in steps is syntactically plausible.
 - Verify commands are realistic for the current stack.
@@ -79,7 +88,7 @@ In `<PLANS_ROOT>/`:
 - Changed scenarios list concrete FR/AC/Test plan updates.
 - DOT edges introduced by the increment match the described affected/added scenarios.
 
-### Hardening Plan
+### Hardening Plan (only when allowlisted)
 
 - Every H-task has `Depends on: TXX` pointing to an existing T-task.
 - No H-task introduces functionality; it must be an invariant, test, policy, observability, or docs update.
@@ -130,6 +139,8 @@ Sort critical, major, minor.
 - Be concrete: `file_path:line` is mandatory for findings.
 - Be honest. If the work is sufficient, say so plainly.
 - Do not repeat findings from previous phases unless the defect is still present in files.
+- Do not request creation of optional product artifacts outside
+  `<ARTIFACT_ALLOWLIST>`.
 ```
 
 ## Artifact
@@ -143,5 +154,9 @@ python3 <skill>/scripts/verify_artifacts.py --phase validation <repo-root>
 ## Stop Conditions
 
 - If the verifier approves, Phase 5 is closed and Phase 6 starts.
-- If the verifier reports inconsistencies, return to the indicated phase, apply fixes, rerun the relevant critic, then rerun Phase 5.
-- If two consecutive verifier rounds find new critical issues, ask the user for a structural scope decision.
+- If the verifier reports inconsistencies, return to the indicated phase and
+  apply the minimal fix.
+- Recheck only changed artifacts, direct counter-references, and previously
+  failed invariants. Non-blocking micro-notes do not trigger another run.
+- If the targeted recheck finds a new critical structural issue, ask the user
+  for a scope decision instead of rerunning the full package automatically.

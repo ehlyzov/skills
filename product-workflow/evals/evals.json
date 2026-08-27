@@ -42,6 +42,27 @@
       "prompt": "Codex-сессия не имеет доступного механизма subagent/child task, но пользователь просит проверить продуктовые артефакты перед PDF. Используй product-workflow.",
       "expected_output": "Агент использует Codex no-subagent fallback только как self-review/fresh-context checklist, явно помечает отчёт как fallback review, not independent verification, и не называет результат independent verification или разрешающим Phase 5 verdict.",
       "files": []
+    },
+    {
+      "id": 7,
+      "name": "technical-execution-does-not-trigger",
+      "prompt": "Реализуй уже утверждённый технический план Codeclew, измени код и запусти benchmark.",
+      "expected_output": "Product Workflow не активируется и не создаёт PRD, baseline, сценарии, product plan, hardening plan или дополнительный approval gate. Задача передаётся обычному repository workflow.",
+      "files": []
+    },
+    {
+      "id": 8,
+      "name": "explicit-product-request-triggers",
+      "prompt": "Используй $product-workflow и составь краткий PRD для новой продуктовой фичи.",
+      "expected_output": "Product Workflow активируется явно, выбирает минимальный подходящий режим и создаёт только запрошенный продуктовый артефакт.",
+      "files": []
+    },
+    {
+      "id": 9,
+      "name": "approved-plan-handoff-stops-product-workflow",
+      "prompt": "Продуктовый implementation plan уже утверждён. Теперь приступай к его выполнению и меняй код.",
+      "expected_output": "Product Workflow завершается на handoff: не исполняет план, не создаёт повторные product gates и не запускает промежуточную независимую верификацию. Реализация начинается как отдельная repository task.",
+      "files": []
     }
   ]
 }

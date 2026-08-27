@@ -9,9 +9,12 @@
 - Если H-задача обнаруживает, что инвариант уже выполнен — пометь `### Note: already enforced at <file>:<line>` и закрой `- [x]`.
 - Конвенция коммитов: `feat(harden): HXX <название>` или `fix(harden): HXX ...`.
 
-## Распределение H-задач
+## Отбор H-задач
 
-Целевое: 12-25 задач, примерно по трети на угол:
+Минимального количества и обязательного распределения нет. Включай задачу
+только при наличии concrete scenario/code evidence, threat model, mandatory
+policy или observed failure. Проверь три угла, но пустая категория допустима с
+объяснением:
 
 - **Архитектура:** layering, DI, абстракции, расширяемость контрактов, atomic operations, error handling consistency.
 - **Безопасность:** auth (token management, TTL), input validation (path traversal, regex whitelists), audit (no-secret-leak), rate-limit, file permissions, gitignore, размер payload, secrets management.
@@ -37,11 +40,14 @@
 
 ## Известные пробелы покрытия (план усиления НЕ закрывает)
 
-5-7 пунктов: pen-test, TLS на localhost (если применимо), formal contract verification, любые отложенные retention/cleanup механизмы, multi-user RBAC, container sandboxing seed-скриптов и т.п. Это design choices или backlog items.
+Краткий список действительно известных ограничений: например pen-test, TLS на
+localhost, formal contract verification, retention/cleanup, multi-user RBAC
+или container sandboxing, только если они применимы. Не заполняй список ради
+квоты.
 
 ## Список задач
 
-(распределение: архитектура / безопасность / поддерживаемость с явным упоминанием каких какие)
+(evidence-backed задачи по применимым углам)
 
 ## H1. Архитектура: <название>
 
@@ -62,14 +68,15 @@ test "$unchecked" = "0" && echo HARDENING-COMPLETE || { echo "outstanding tasks:
 
 - Каждая H-задача имеет `Depends on: TXX`.
 - Ни одна H-задача не вводит **новой функциональности** (только инвариант, тест, политика, обновление docs).
-- Распределение по углам близко к 1/3 / 1/3 / 1/3.
+- Все три угла рассмотрены; отсутствие задач в категории объяснено evidence.
 - Известные пробелы покрытия зафиксированы в начале — критик не возвращается к ним каждый раунд.
 - Verify-команды реалистичны (правильные модули, правильные test-классы).
 - H-задача не дублирует уже сделанное в T-задаче (если дублирует — `### Note` и close).
 
 ## Критические hardening-инварианты, которые часто упускают
 
-При генерации H-задач обязательно проверь, что **хотя бы по одному пункту** из каждой группы попало в план (если применимо к продукту):
+При генерации H-задач используй группы ниже как applicability checklist, а не
+как квоту. Добавляй задачу только если риск применим и подтверждён:
 
 1. **Auth & secrets:**
    - Approve-token / API key — где хранится, какой TTL, sliding или fixed.
@@ -101,4 +108,6 @@ test "$unchecked" = "0" && echo HARDENING-COMPLETE || { echo "outstanding tasks:
    - API CHANGELOG с deprecation policy.
    - Инвариант: нет orphaned TODO без owner-prefix.
 
-Эти 6 групп — стандартный чек-лист hardening-auditor. Если что-то из этого не попало в план — добавляй H-задачу.
+Эти 6 групп — prompts для проверки. Отсутствие пункта в плане не является
+дефектом без applicability evidence; зафиксируй неприменимость или non-blocking
+gap вместо вымышленной H-задачи.

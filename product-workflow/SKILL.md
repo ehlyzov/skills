@@ -1,11 +1,16 @@
 ---
 name: product-workflow
-description: "Use when the user asks for product-level PRD, «продуктовая проработка», «продуктовое описание», user scenarios, feature/product implementation plan, hardening plan, roadmap validation, or stakeholder PDF packaging. Use for new products, major feature design, or product-level documentation of an existing codebase; not for narrow bug fixes."
+description: "Create product-facing documents only when explicitly requested: PRDs, user scenarios, baselines, feature impact, roadmaps, stakeholder packages, and product implementation or hardening plans. Do not use for code changes, approved-plan execution, technical research, benchmarks, or developer-tool implementation unless product documentation is explicitly requested."
 ---
 
 # Product Workflow
 
-Скилл ведёт продуктовую проработку «end-to-end»: от анализа продуктового пространства до полностью согласованных артефактов. На выходе пользователь получает согласованные пакеты:
+Скилл создаёт продуктовые документы и планы. Он не исполняет утверждённый
+технический план и не управляет обычной разработкой. Выбирай только те
+артефакты и фазы, которые пользователь запросил явно; полный пакет не является
+режимом по умолчанию.
+
+Возможные выходы:
 
 1. **Продуктовое описание** (`docs/product/overview.md` + `docs/product/scenarios/01..N.md`) — задача, персоны, проблемы, цели, N сценариев по строгому шаблону.
 2. **Журнал решений** (`docs/product/decisions.md`) — варианты, факты, trade-offs, рекомендация агента и явный статус решения.
@@ -15,11 +20,14 @@ description: "Use when the user asks for product-level PRD, «продуктов
 6. **План усиления** (`docs/plans/<product>-hardening-plan.md`) — архитектура / безопасность / поддерживаемость, не добавляющая функционала; задачи H1..HN с зависимостями от T-задач.
 7. **Независимый вердикт и PDF** (`docs/product/validation/verdict.md` + PDF в `~/Downloads/`) — stakeholder-facing продуктовый документ без T/H-планов по умолчанию.
 
-После завершения работы запускается **независимый верификатор** — отдельный агент, читающий все артефакты и подтверждающий целостность и непротиворечивость. Его отчёт сохраняется в `docs/product/validation/verdict.md`. Без свежего разрешающего вердикта работа не считается законченной и PDF не собирается, кроме явного запроса пользователя «собери PDF без проверки».
+Независимый верификатор обязателен только для полного PRD/delivery package,
+stakeholder PDF и явно запрошенного финального product gate. Для узкого режима
+он проверяет только созданный артефакт и его прямые источники. Не заставляй
+малую задачу оплачивать аудит полного продуктового архива.
 
 ## Когда использовать
 
-- Пользователь сказал: «нужно продуктовое описание», «PRD по фиче X», «спроектируй сценарии», «составь план реализации», «hardening plan», «оформи продукт».
+- Пользователь явно сказал: «нужно продуктовое описание», «PRD по фиче X», «спроектируй сценарии», «составь продуктовый план реализации», «hardening plan», «оформи продукт».
 - Есть кодовая база и нужно зафиксировать её продуктовое лицо + roadmap.
 - Нужно встроить новую фичу или доработку в уже существующий продукт, не создавая сценарный «остров».
 - Есть идея/новый продукт без кода — нужно собрать целостную картину сценариев + план.
@@ -29,7 +37,25 @@ description: "Use when the user asks for product-level PRD, «продуктов
 
 - Точечный bug-fix или одиночная фича без претензий на продуктовый уровень — это переусложнение.
 - Чисто технический proposal без пользовательских сценариев — лучше обычный design doc.
+- Исполнение уже утверждённого плана, изменение кода, рефакторинг, code review
+  или проверка тестов — используй обычный repository workflow.
+- Исследовательский DAG, benchmark/evidence plan, agent/tool infrastructure или
+  разработка developer tool не становятся продуктовой проработкой только
+  потому, что репозиторий является продуктом.
+- Запрос «реализуй фичу» сам по себе не означает «создай PRD». Применяй этот
+  навык только при явной потребности в продуктовых артефактах.
 - Готовое описание уже есть и нужен только PDF — выполни напрямую через `scripts/build_pdf.sh`.
+
+## Routing guard
+
+Перед началом выбери минимальный режим. Если результатом запроса должен быть
+код, тест, технический design/research document или benchmark result, а не
+продуктовый артефакт, прекрати этот workflow. Не создавай baseline, personas,
+scenario graph, decision log, hardening plan или PDF «на всякий случай».
+
+Если в текущей сессии уже есть явное одобрение нужного product scope, считай
+его достаточным. Не запрашивай повторный approval и не создавай identity,
+attestation или approval infrastructure.
 
 ## Работа с пользователем
 
@@ -62,27 +88,31 @@ description: "Use when the user asks for product-level PRD, «продуктов
 - Такой проход must be labeled as fallback.
 - Такой проход must not be called independent verification.
 - Используй self-review / fresh-context checklist только как временный safety net: перечитай артефакты с начала, проверь чек-лист соответствующей фазы, сохрани отчёт с явной пометкой `Fallback review, not independent verification`.
-- Для Phase 5, Phase 8 и PDF gate настоящий независимый verifier остаётся предпочтительным и обязательным, если tool/harness его поддерживает.
+- Для Phase 5, Phase 8 и PDF gate настоящий независимый verifier остаётся
+  предпочтительным и обязательным, когда выбранный режим действительно требует
+  соответствующий gate.
 
-## Высокоуровневый поток
+## Высокоуровневый поток полного пакета
 
-Скилл ведёт пользователя через 9 фаз. Между фазами — обязательно подтверждение от пользователя через harness-механизм пользовательских вопросов (Claude `AskUserQuestion`, Codex — interactive prompt) на критических развилках (scope, локация, число сценариев, growth-направления, выбор решения).
+Используй этот поток только когда пользователь запросил полный пакет. В других
+режимах запускай лишь выбранные фазы. Подтверждение пользователя нужно только
+на нерешённых продуктовых развилках, а не между каждой технической операцией.
 
 ```
 [Phase 0] Discovery, scope & decision support
    ↓
 [Phase 1] Overview + N scenarios (строгий шаблон)
-   ↓ итеративная критика, до «всё хорошо»
+   ↓ один critic pass + targeted delta recheck
 [Phase 2] UX continuity (раздел «Дополнительные сценарии и связь с продуктом»)
-   ↓ итеративная критика
-[Phase 3] Implementation plan (command-level T-tasks)
-   ↓ итеративная критика
-[Phase 4] Hardening plan (H-tasks — архитектура/безопасность/поддерживаемость)
-   ↓ итеративная критика
-[Phase 5] Independent artifact verification (отдельный агент, all artifacts)
-   ↓ если «нужны правки» — возврат к нужной фазе
+   ↓ targeted cross-reference check
+[Phase 3] Implementation plan (только если запрошен)
+   ↓ один полный critic pass + targeted delta recheck
+[Phase 4] Hardening plan (только если запрошен)
+   ↓ risk-based review
+[Phase 5] Independent package verification (allowlisted artifacts)
+   ↓ blocking fix + один targeted recheck
 [Phase 6] Editorial/style pass (единый русский стиль)
-   ↓ если «нужны правки» — вычитка повторяется
+   ↓ semantic-diff check
 [Phase 7] Product PDF assembly (без T/H-планов по умолчанию)
    ↓ если фича реализована
 [Phase 8] Post-implementation scenario verification
@@ -96,14 +126,20 @@ description: "Use when the user asks for product-level PRD, «продуктов
 
 | Mode | Use when | Required output | Gate rule |
 | --- | --- | --- | --- |
-| `quick-plan` | Пользователь просит «напиши план», «сформулируй», planning checkpoint или design-only artifact без реализации | Один repo-local Markdown artifact с evidence, статусом, assumptions и next steps | Phase 0 gate is mandatory only for unresolved product decisions; it does not block quick-plan when the user explicitly asked for a small planning artifact |
+| `quick-plan` | Пользователь явно просит небольшой продуктовый planning checkpoint или product design artifact без реализации | Один repo-local Markdown artifact с evidence, статусом, assumptions и next steps | Phase 0 gate нужен только для нерешённых продуктовых решений; generic technical/research plan не относится к этому режиму |
 | `baseline-only` | Нужно зафиксировать текущие сценарии существующего продукта | `current-scenario-baseline.md`, `scenario-cards.md`, `scenario-graph.dot` | Human gate только при спорных current/growth классификациях |
 | `increment-impact` | Нужно встроить фичу/доработку в существующий baseline | pre-scan при неоднозначности + `<feature>-impact.md` | Не переходить к implementation plan без affected Sxx или явного `N/A` rationale |
-| `full-prd` | Нужен полный PRD / продуктовая проработка / stakeholder package | Phase 0..7 по основному потоку | Phase 0 gate is mandatory before scenarios, implementation plan, hardening plan, or PDF |
+| `product-plan` | По утверждённым сценариям нужен именно продуктовый implementation plan | Phase 3 и проверка plan scope | Не добавлять PRD/hardening/PDF, если они не запрошены |
+| `hardening-plan` | Пользователь отдельно просит усиление утверждённого product plan | Phase 4 | Создавать только evidence-backed protections; нет обязательного количества задач |
+| `full-prd` | Нужен полный PRD или целостная продуктовая проработка | Phase 0..2, 5 и 6; Phase 3/4/7 только если названы в запросе | Phase 0 gate обязателен только при нерешённом scope |
 | `pdf-package` | Артефакты уже есть, нужно только собрать stakeholder PDF | PDF через `scripts/build_pdf.sh` | Требуется свежий разрешающий verdict, если пользователь явно не попросил bypass |
 | `post-implementation-check` | Реализация T/H-плана завершена или нужна release readiness проверка | `implementation-verdict.md` + реальные команды проверки | Не утверждать готовность при critical/major blockers |
 
-Для `quick-plan` не создавай `overview.md`, scenario-файлы, implementation plan или hardening plan, если пользователь не попросил их явно. Такой артефакт должен быть помечен как planning/design-only, если поведение не проверялось тестами или runtime evidence.
+Для `quick-plan` не создавай `overview.md`, scenario-файлы, implementation plan
+или hardening plan, если пользователь не попросил их явно. Такой артефакт
+помечай как planning/design-only, если поведение не проверялось тестами или
+runtime evidence. После выдачи утверждённого плана заверши product-workflow;
+его исполнение является отдельной задачей.
 
 ## Режим `baseline`
 
@@ -141,16 +177,19 @@ description: "Use when the user asks for product-level PRD, «продуктов
 | 1 | approved/delegated scope | overview + сценарии | `scripts/verify_artifacts.py --phase scenarios <repo>` | подтверждение сценариев |
 | baseline | существующий продукт или approved сценарии | `current-scenario-baseline.md` + `scenario-cards.md` + `scenario-graph.dot` + optional increment impact | `--phase baseline`; для инкремента также `--phase pre-scan` и `--phase impact`; semantic связность проверяют scenario-critic + independent-verifier | подтверждение только при спорном impact |
 | 2 | сценарии Phase 1 | UX continuity во всех сценариях | `--phase scenarios` + scenario-critic | только при смысловых развилках |
-| 3 | approved сценарии | implementation plan + gap.yaml | `--phase plan` | подтверждение известных пробелов |
-| 4 | implementation plan | hardening plan | `--phase hardening` | подтверждение backlog/probes вне scope |
-| 5 | product + plans | `docs/product/validation/verdict.md` | `--phase validation` | блокер, если есть critical/major |
+| 3 | approved сценарии и явный запрос product plan | implementation plan + optional gap.yaml | `--phase plan` | подтверждение только нерешённых scope gaps |
+| 4 | implementation plan и явный запрос hardening | evidence-backed hardening plan | `--phase hardening` | подтверждение только новых policy decisions |
+| 5 | artifacts выбранного режима | `docs/product/validation/verdict.md` | `--phase validation` | critical/major блокируют только проверяемый package/claim |
 | 6 | свежий verdict | вычитанные product docs | style-editor report + повторный verifier | утверждение тона при спорных правках |
 | 7 | вычитанные docs | PDF в `~/Downloads/` | `build_pdf.sh` с validation gate | визуальная проверка PDF |
 | 8 | выполненный T/H-план | implementation readiness verdict | implementation-verifier + реальные tests | решение о готовности релиза |
 
 ## Mandatory Phase 0 user gate
 
-Перед созданием `overview.md`, файлов сценариев, implementation plan или hardening plan остановись и запроси у пользователя подтверждение Phase 0 scope.
+Перед созданием `overview.md`, файлов сценариев, implementation plan или
+hardening plan проверь, остались ли нерешённые продуктовые решения. Если scope
+уже явно одобрен в текущей сессии, зафиксируй источник approval и продолжай без
+повторного вопроса.
 
 Сообщение с запросом подтверждения должно содержать:
 
@@ -159,9 +198,12 @@ description: "Use when the user asks for product-level PRD, «продуктов
 3. Для каждого решения: варианты, помеченную `Рекомендация`, rationale/evidence и impact выбора.
 4. Финальный явный вопрос с маркером `?`.
 
-Не переходи к Phase 1, пока пользователь не ответил или явно не делегировал агенту все решения.
+Не переходи к Phase 1, пока пользователь не ответил или явно не делегировал
+агенту все реально открытые решения. Не спрашивай обязательный шаблонный набор,
+если ответы уже даны или не влияют на выбранный режим.
 
-Обязательные вопросы Phase 0:
+Потенциальные вопросы Phase 0, задаваемые только когда ответ не следует из
+запроса и существенно меняет результат:
 
 - Локация артефактов.
 - Число сценариев.
@@ -176,12 +218,13 @@ description: "Use when the user asks for product-level PRD, «продуктов
 
 Цель: понять продуктовое пространство, собрать факты для решений и зафиксировать scope без самовольного выбора продуктового направления.
 
-1. Если есть кодовая база — запусти 2-3 параллельных Explore агентов:
+1. Если есть кодовая база и полный продуктовый scope нельзя понять из уже
+   существующих документов, запусти до 2-3 параллельных Explore агентов:
    - UI / пользовательские поверхности: [agents/explore-ui.md](agents/explore-ui.md).
    - API / контракты: [agents/explore-api.md](agents/explore-api.md).
    - Runtime / верификация: [agents/explore-runtime.md](agents/explore-runtime.md).
    Результаты идут в `docs/product/discovery/` или в рабочий контекст фазы: evidence paths, confidence, unknowns, risk notes.
-2. Через AskUserQuestion уточни:
+2. Через AskUserQuestion уточни только неизвестные и значимые пункты:
    - **Локация артефактов** (рекомендация: `docs/product/`, `docs/plans/`).
    - **Число сценариев**: 5-7 (компактный продукт), 8-12 (типичный), 13+ (большой).
    - **Соотношение current vs growth**: сколько сценариев описывают текущую функциональность, сколько — точки роста.
@@ -203,15 +246,19 @@ description: "Use when the user asks for product-level PRD, «продуктов
 Алгоритм:
 1. Создать `docs/product/overview.md` со скелетом: Назначение документа, Видение, Аудитория и персоны, Сводные проблемы (P1..PN), Цели (G1..GN), Не входит в продукт, Карта возможностей, Дорожная карта и точки роста, Метрики успеха, Глоссарий, Индекс сценариев.
 2. Создать `docs/product/scenarios/NN-<slug>.md` для каждого сценария по шаблону. Все 9 разделов обязательны, предпочтительно с русскими заголовками: Проблема / Цель / Не входит в сценарий / Пользовательский сценарий (с подсекциями Основной/Альтернативные/Ошибочные сценарии) / Функциональные требования / Нефункциональные требования / Архитектурные ограничения / Критерии приёмки / План проверки.
-3. После draft — запустить scenario-critic (см. [agents/scenario-critic.md](agents/scenario-critic.md)) автоматически, в цикле:
+3. После draft запустить scenario-critic (см. [agents/scenario-critic.md](agents/scenario-critic.md)) один раз:
    - Применить найденные правки.
    - Задать пользователю уточняющие вопросы по реальным развилкам через harness-механизм пользовательских вопросов (Claude `AskUserQuestion`, Codex — interactive prompt).
-   - Повторять, пока критик не вернёт **«Всё хорошо»**.
+   - После исправления blocking findings выполнить один targeted recheck только
+     изменённых сценариев и связей. Если остаётся новая структурная проблема,
+     запросить решение пользователя вместо неограниченного цикла.
 4. Запустить `scripts/verify_artifacts.py --phase scenarios <docs/product/>` для машинной проверки структуры (9 разделов, 3 user-flow подсекции, валидные cross-refs).
 5. Если включён режим `baseline`, создать или обновить `current-scenario-baseline.md`, `scenario-cards.md` и `scenario-graph.dot` по шаблону. Для инкремента дополнительно создать `docs/product/increments/<feature>-pre-scan.md` при неоднозначном/cross-cutting scope, затем `docs/product/increments/<feature>-impact.md` и связать их с изменёнными scenario-файлами/cards.
 6. Прогнать `scripts/verify_artifacts.py --phase baseline <docs/product/>`; для инкремента также `--phase pre-scan <docs/product/>` и `--phase impact <docs/product/>`. Machine-check валидирует структуру, поля, enum-значения и лёгкую Sxx-связность; продуктовый смысл остаётся за critic/verifier.
 
-Разворачивание Phase 1 обычно занимает 3-5 раундов критики. Не торопись закрыть фазу до явного «всё хорошо».
+Не планируй заранее несколько раундов критики. Один полный проход и один
+targeted recheck являются нормой; дополнительные полные проходы требуют нового
+структурного риска, а не косметических замечаний.
 
 ## Phase 2 — UX continuity
 
@@ -220,7 +267,7 @@ description: "Use when the user asks for product-level PRD, «продуктов
 Алгоритм:
 1. Запустить general-purpose агента с инструкцией добавить раздел к каждому файлу (см. [agents/ux-continuity-author.md](agents/ux-continuity-author.md)). 200-400 слов на сценарий, повествование, не bullet-список.
 2. Прогнать scenario-critic ещё раз — он валидирует bidirectional cross-refs и непротиворечивость.
-3. Итерации до «всё хорошо».
+3. После исправления выполнить один targeted recheck изменённых cross-refs.
 
 ## Phase 3 — Implementation plan
 
@@ -229,33 +276,59 @@ description: "Use when the user asks for product-level PRD, «продуктов
 **Формат задачи и conventions:** см. [references/plan-template.md](references/plan-template.md).
 
 Алгоритм:
-1. Создать `docs/plans/<product>-implementation-plan.md`. Первая задача — T0 gap-analysis: пройти все FR/AC сценариев, выводить `docs/plans/<product>-gap.yaml` со статусом каждого требования (`done` / `partial` / `missing`).
-2. Если есть `docs/product/increments/<feature>-impact.md`, T0 gap-analysis обязан отдельно перечислить affected existing scenarios/cards, touched extension points и доказать, что regression/compatibility проверки старых путей учтены.
-3. Спроектировать оптимальную последовательность T-задач: foundation (общая инфра) → current scenario gap-fixes → impact changes for existing scenarios → growth/new scenarios → final verification. Зависимости — явный `Depends on:` в каждой задаче.
+1. Создать `docs/plans/<product>-implementation-plan.md`. Делать отдельный
+   `gap.yaml` только когда coverage многих сценариев действительно неизвестен
+   и существующие документы/тесты не дают компактного ответа. Для малого
+   инкремента записать `done` / `partial` / `missing` непосредственно в Sources
+   и не создавать подготовительный artifact.
+2. Первой незавершённой задачей сделать минимальный acceptance-bearing
+   vertical slice: пользовательское поведение или измеримый product outcome с
+   тестом. Допускается не более одного предшествующего enabling task, только
+   если без него slice технически невозможен; enabler обязан назвать первый
+   consumer, точную необходимость и минимальный scope.
+3. Строить последовательность как `vertical slice → just-in-time shared
+   primitive → следующие slices → final verification`. Не создавать общую
+   инфраструктуру, контроллеры, схемы, manifests или observability заранее без
+   непосредственного consumer-а.
 4. Каждая задача — `## TXX. <название>` с фиксированной структурой: Status / Goal / Sources / Depends on / Read first / Modify / Product artifacts / Steps / Verify / DoD. Steps содержит inline-код или конкретные команды.
 5. `Product artifacts` обязателен. Если задача меняет пользовательский flow, он перечисляет обновления `scenario-cards.md`, `current-scenario-baseline.md`, `scenario-graph.dot`, scenario/impact docs. Если не меняет — явная строка `No product artifact update because ...`.
-6. Запустить plan-critic (см. [agents/plan-critic.md](agents/plan-critic.md)) автоматически, в цикле, до «достаточно».
-7. Прогнать `scripts/verify_artifacts.py --phase plan <docs/plans/>` — проверка чекбоксов, формата, bidirectional file-refs.
+6. Для каждой задачи проверить ownership: она даёт прямой product outcome,
+   минимальный enabler ближайшего outcome или assurance этого outcome. Гейт
+   может блокировать только защищаемый artifact/claim; telemetry gap не должен
+   блокировать несвязанную реализацию.
+7. Если план задаёт budgets, считать полный execution contour: orchestrator,
+   producer, независимый verifier и один разрешённый repair. Проверять stop-loss
+   до следующего действия, не после перерасхода. Не вводить универсальные
+   числовые лимиты без task-local основания.
+8. Запустить plan-critic один раз. Исправить blocking findings и выполнить один
+   targeted recheck изменённых задач. Не повторять полный аудит после локальной
+   правки.
+9. Прогнать `scripts/verify_artifacts.py --phase plan <docs/plans/>` — проверка чекбоксов, формата, bidirectional file-refs.
 
 ## Phase 4 — Hardening plan
 
-Цель: отдельный план усиления архитектуры / безопасности / поддерживаемости. **Не вводит новой функциональности** — только инварианты, защиты, observability.
+Цель: по явному запросу создать отдельный план усиления архитектуры /
+безопасности / поддерживаемости. **Не вводит новой функциональности** — только
+инварианты, защиты и observability, подтверждённые риском или evidence.
 
 **Формат:** см. [references/hardening-template.md](references/hardening-template.md). Тот же task-формат, что в Phase 3, но с префиксом H. Каждая H-задача имеет `Depends on:` на конкретную T-задачу.
 
 Алгоритм:
-1. Запустить hardening-auditor (см. [agents/hardening-auditor.md](agents/hardening-auditor.md)) — он читает план реализации, сценарии и (если есть) код; возвращает 12-25 H-задач с распределением примерно 1/3 архитектура, 1/3 безопасность, 1/3 поддерживаемость.
+1. Запустить hardening-auditor (см. [agents/hardening-auditor.md](agents/hardening-auditor.md)) — он читает план реализации, сценарии и (если есть) код; возвращает только применимые H-задачи. Минимального количества и искусственного распределения по категориям нет.
 2. Записать `docs/plans/<product>-hardening-plan.md` по тому же формату что в Phase 3.
 3. В начале файла — раздел «Известные пробелы покрытия» (что hardening **не** закрывает, чтобы критик не возвращался). Минимум: pen-test, TLS на localhost (если применимо), formal contract verification, любые отложенные retention/cleanup механизмы.
-4. Прогнать plan-critic ещё раз (универсальный — работает и для T, и для H задач).
-5. Итерации до «достаточно».
+4. Прогнать plan-critic один раз. После blocking repair проверить только изменённые H-задачи.
+5. Если риск не подтверждён кодом, сценарием, threat model или обязательной policy, оставить его как non-blocking gap, а не превращать в задачу.
 
 ## Phase 5 — Independent artifact verification
 
-Цель: **независимый** агент-валидатор (отдельный от писавших и критиковавших) подтверждает целостность всех артефактов: overview + сценарии + decisions + план + hardening.
+Цель: **независимый** агент-валидатор (отдельный от писавших и критиковавших)
+подтверждает целостность artifacts выбранного режима и их прямых источников.
+Только полный delivery package требует чтения overview + scenarios + decisions
++ plan + hardening целиком.
 
 Алгоритм:
-1. Запустить independent-verifier (см. [agents/independent-verifier.md](agents/independent-verifier.md)). Он читает **все** артефакты, без знания истории работы.
+1. Запустить independent-verifier (см. [agents/independent-verifier.md](agents/independent-verifier.md)). Он читает artifacts текущего package и их прямые canonical sources, без истории работы. Не включать optional планы и views, которые выбранный режим не создавал и не менял.
 2. Чек-лист валидатора:
    - Overview index ↔ scenario-файлы согласованы (1-к-1).
    - Persona в overview = персоны в шапках сценариев.
@@ -265,14 +338,16 @@ description: "Use when the user asks for product-level PRD, «продуктов
    - Если есть pre-scan: candidate/rejected scenarios имеют rationale; cross-cutting checklist закрывает auth/session/legal, search/recall/navigation, settings/preferences/privacy, operator/admin/runtime через `Baseline scenario` = Sxx или `N/A` с rationale.
    - Если есть increment impact: каждая новая фича классифицирована как `extends` / `changes` / `adds` / `splits` / `replaces` / `deprecates`; affected scenarios/cards обновлены в extension points, FR/AC/Test plan; новые сценарии имеют вход и возврат/следующий шаг.
    - Implementation plan: каждая T-задача содержит `Product artifacts` и либо обновляет нужные baseline/cards/DOT/impact docs, либо объясняет `No product artifact update because ...`.
-   - План: каждый FR/AC сценария попадает в gap.yaml; каждая T-задача либо реализует FR/AC, либо foundation.
+   - План: каждый FR/AC сценария покрыт задачей либо помечен `done` в optional
+     gap.yaml или непосредственно в plan evidence; каждый enabler называет
+     ближайший acceptance-bearing consumer.
    - Hardening: каждая H-задача имеет валидный `Depends on:` T-задачу; не вводит новой функциональности.
    - Cross-references двусторонни.
    - Числовые контракты не противоречат друг другу (одно число в overview = то же число в сценарии).
 3. Сохранить полный отчёт в `docs/product/validation/verdict.md`.
 4. Прогнать `scripts/verify_artifacts.py --phase validation <repo-root>`.
-5. Если вердикт «нужны правки» — вернуться к соответствующей фазе и применить.
-6. Цикл повторяется до **«Артефакты целостны, непротиворечивы, замкнуты. Готовы к финальной упаковке.»**.
+5. Если вердикт содержит blocking defect — вернуться к соответствующей фазе и применить минимальную правку.
+6. Выполнить один targeted recheck changed artifacts/invariants. Если он выявил новую structural ambiguity, запросить решение пользователя; не запускать новый полный цикл автоматически. Non-blocking micro-notes не блокируют package.
 
 ## Phase 6 — Editorial/style pass
 
@@ -283,7 +358,7 @@ description: "Use when the user asks for product-level PRD, «продуктов
 2. Правки применяются только к продуктовым формулировкам, структуре и стилю. Нельзя менять смысл, acceptance criteria, T/H-планы или инженерные команды.
 3. Английский оставить только в code/API/path/command/proper noun.
 4. После правок снова прогнать `scripts/verify_artifacts.py --phase scenarios <repo-root>`.
-5. Так как продуктовые markdown-файлы изменились, повторно запустить independent-verifier и обновить `docs/product/validation/verdict.md`.
+5. Так как изменились только формулировки, выполнить targeted verifier pass по semantic-diff и обновить `docs/product/validation/verdict.md`; не перечитывать неизменённые implementation/hardening планы.
 6. Прогнать `scripts/verify_artifacts.py --phase validation <repo-root>`.
 
 ## Phase 7 — Product PDF assembly
@@ -341,11 +416,22 @@ description: "Use when the user asks for product-level PRD, «продуктов
 
 ## Принципы работы
 
-1. **Не пиши задачи за один присест на всю фазу.** Делай каркас, потом заполняй итеративно. Каждая итерация критики делает артефакты лучше.
-2. **Критики автоматизированы.** Цикл «правка → критик → правка» крутится сам, без вмешательства пользователя, пока критик не вернёт «всё хорошо». Пользователь подключается только на реальных развилках смысла (через harness-механизм пользовательских вопросов (Claude `AskUserQuestion`, Codex — interactive prompt)).
-3. **Независимый верификатор — обязателен.** Без Phase 5 работа не считается завершённой. Это независимая пара глаз, защищающая от «слепых пятен» автора.
-4. **Решения не прятать в тексте.** Варианты и выбор фиксируются в `docs/product/decisions.md`; планы нельзя строить по неутверждённым решениям.
-5. **Иммутабельность сценариев.** После Phase 1 + критика, сценарии — иммутабельная цель для плана и hardening. Все изменения требуют явного запроса пользователя.
-6. **Инкремент встраивается в baseline.** Новая фича должна показать влияние на текущие сценарии; если влияния нет, это отдельный продуктовый остров и требует явного решения пользователя.
-7. **Сценарии не лезут в код, план не лезет в продуктовую ценность.** Сценарии описывают «что и зачем»; план — «как», на уровне команд и файлов; hardening — «что укрепить».
-8. **PDF — продуктовый артефакт для шеринга, а не источник правды.** Markdown — каноничен; PDF только генерируется из него и не коммитится. Implementation/hardening планы не попадают в PDF без явного запроса.
+1. **Выбирай минимальный режим.** Не создавай артефакты, которые не являются
+   ответом пользователя или прямой зависимостью выбранного package.
+2. **Планируй от результата.** Первая исполняемая задача даёт
+   acceptance-bearing vertical slice; foundation появляется just-in-time с
+   первым consumer-ом.
+3. **Ограничивай assurance.** Норма — один critic/verifier pass и один targeted
+   delta recheck. Полный повтор требует нового structural risk.
+4. **Соблюдай gate locality.** Проверка блокирует только тот artifact, claim или
+   unsafe action, который она защищает.
+5. **Считай полный contour.** Budget включает orchestration, author/producer,
+   verifier и разрешённый repair; stop-loss применяется до перерасхода.
+6. **Независимый верификатор пропорционален package.** Он обязателен для полного
+   PRD/delivery package и stakeholder gate; узкие режимы проверяют только свой
+   semantic delta и прямые источники.
+7. **Решения не прятать в тексте.** Варианты и выбор фиксируются в `docs/product/decisions.md`; планы нельзя строить по неутверждённым решениям.
+8. **Иммутабельность сценариев.** После Phase 1 + критика сценарии — иммутабельная цель для плана и hardening. Все изменения требуют явного запроса пользователя.
+9. **Инкремент встраивается в baseline.** Новая фича должна показать влияние на текущие сценарии; если влияния нет, это отдельный продуктовый остров и требует явного решения пользователя.
+10. **Сценарии не лезут в код, план не лезет в продуктовую ценность.** Сценарии описывают «что и зачем»; план — «как», на уровне команд и файлов; hardening — «что укрепить».
+11. **PDF — продуктовый артефакт для шеринга, а не источник правды.** Markdown — каноничен; PDF только генерируется из него и не коммитится. Implementation/hardening планы не попадают в PDF без явного запроса.
