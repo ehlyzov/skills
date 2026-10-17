@@ -1,0 +1,14 @@
+{
+  "note": "Авторские критерии демонстрации. Не передавать исполнителю как подсказку. Это небольшой набор, не доказательство производственной надёжности.",
+  "cases": [
+    {"id": "good", "checks": {"R1": "PASS", "R2": "PASS"}, "verdict": "PASS"},
+    {"id": "vague", "checks": {"R1": "PASS", "R2": "FAIL"}, "verdict": "FAIL"},
+    {"id": "missing", "checks": {"R1": "UNDETERMINED", "R2": "UNDETERMINED"}, "verdict": "UNDETERMINED"},
+    {"id": "inline", "checks": {"R1": "PASS", "R2": "PASS"}, "verdict": "PASS", "purpose": "Условие приёмки без отдельного раздела"}
+  ],
+  "discovery_cases_not_run": [
+    {"request": "Проверь, можно ли передать эту постановку в разработку", "should_trigger": true},
+    {"request": "Напиши постановку задачи по этим пожеланиям", "should_trigger": false},
+    {"request": "Сделай ревью этого Python-кода", "should_trigger": false}
+  ]
+}

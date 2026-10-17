@@ -1,0 +1,110 @@
+{
+  "cases": 6,
+  "matches_original_expectations": 5,
+  "structurally_valid": 6,
+  "skill_and_expectations_unchanged": true,
+  "rows": [
+    {
+      "case": "reset-link",
+      "expected": {
+        "R1": "PASS",
+        "R2": "PASS",
+        "verdict": "PASS",
+        "next_action": "ACCEPT"
+      },
+      "actual": {
+        "R1": "PASS",
+        "R2": "PASS",
+        "verdict": "PASS",
+        "next_action": "ACCEPT"
+      },
+      "matches": true,
+      "validation_errors": []
+    },
+    {
+      "case": "notification-bell",
+      "expected": {
+        "R1": "PASS",
+        "R2": "FAIL",
+        "verdict": "FAIL",
+        "next_action": "REFINE"
+      },
+      "actual": {
+        "R1": "PASS",
+        "R2": "PASS",
+        "verdict": "PASS",
+        "next_action": "ACCEPT"
+      },
+      "matches": false,
+      "validation_errors": []
+    },
+    {
+      "case": "vague-goal",
+      "expected": {
+        "R1": "FAIL",
+        "R2": "FAIL",
+        "verdict": "FAIL",
+        "next_action": "REFINE"
+      },
+      "actual": {
+        "R1": "FAIL",
+        "R2": "FAIL",
+        "verdict": "FAIL",
+        "next_action": "REFINE"
+      },
+      "matches": true,
+      "validation_errors": []
+    },
+    {
+      "case": "fragment-goal",
+      "expected": {
+        "R1": "PASS",
+        "R2": "UNDETERMINED",
+        "verdict": "UNDETERMINED",
+        "next_action": "PROVIDE_INPUT"
+      },
+      "actual": {
+        "R1": "PASS",
+        "R2": "UNDETERMINED",
+        "verdict": "UNDETERMINED",
+        "next_action": "PROVIDE_INPUT"
+      },
+      "matches": true,
+      "validation_errors": []
+    },
+    {
+      "case": "fragment-sufficient",
+      "expected": {
+        "R1": "PASS",
+        "R2": "PASS",
+        "verdict": "PASS",
+        "next_action": "ACCEPT"
+      },
+      "actual": {
+        "R1": "PASS",
+        "R2": "PASS",
+        "verdict": "PASS",
+        "next_action": "ACCEPT"
+      },
+      "matches": true,
+      "validation_errors": []
+    },
+    {
+      "case": "embedded-instruction",
+      "expected": {
+        "R1": "PASS",
+        "R2": "FAIL",
+        "verdict": "FAIL",
+        "next_action": "REFINE"
+      },
+      "actual": {
+        "R1": "PASS",
+        "R2": "FAIL",
+        "verdict": "FAIL",
+        "next_action": "REFINE"
+      },
+      "matches": true,
+      "validation_errors": []
+    }
+  ]
+}

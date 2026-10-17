@@ -1,0 +1,13 @@
+{
+  "created_at": "2026-10-17T09:29:29.037178+00:00",
+  "model_requested": "gpt-6.1-sol",
+  "reasoning_effort": "high",
+  "design": "6 new synthetic cases; 3 fresh-context agents, 2 disjoint cases each; forced skill invocation; one attempt per case; expectations fixed before agent launch; shared filesystem, access restricted by instruction, not sandbox",
+  "skill_sha256": {
+    ".DS_Store": "7e76687ea67bc3981591b5b643fc2863d824e21616c71d26a62d9f83b92959c8",
+    "SKILL.md": "77865bd88f4e09e6a8e8132ed635581524d7d60b81420df6cfb10eb7432c3627",
+    "references/criteria.md": "f51b957a7f8da08292e19c681f8020208db178d2efd90596c0fb9f8348ca3793",
+    "scripts/check_review.py": "3b133542a3e3dc5f87c4a7693c5c44160bc5312453e876f3833999f47ca3a758"
+  },
+  "expectations_sha256": "4df30e4926f009484f7906a80b47f67a945265ec9b4490ff8065f4ff6a339e21"
+}

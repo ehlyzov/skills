@@ -1,0 +1,10 @@
+{
+  "sha256": {
+    "input": "621826dfe7d4b58226f0bf871eaccf99d428887af3f84f80a2eec620ced439e2",
+    "review": "c2ecfcebc14afde48bcf8af206b057d41883820e6ed2d1f800d90b4ffc0e1a90",
+    "SKILL.md": "77865bd88f4e09e6a8e8132ed635581524d7d60b81420df6cfb10eb7432c3627",
+    "references/criteria.md": "f51b957a7f8da08292e19c681f8020208db178d2efd90596c0fb9f8348ca3793",
+    "scripts/check_review.py": "3b133542a3e3dc5f87c4a7693c5c44160bc5312453e876f3833999f47ca3a758"
+  },
+  "model": "not recorded by validator"
+}

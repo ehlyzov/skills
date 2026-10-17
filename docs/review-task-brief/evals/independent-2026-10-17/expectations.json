@@ -1,0 +1,38 @@
+{
+  "reset-link": {
+    "R1": "PASS",
+    "R2": "PASS",
+    "verdict": "PASS",
+    "next_action": "ACCEPT"
+  },
+  "notification-bell": {
+    "R1": "PASS",
+    "R2": "FAIL",
+    "verdict": "FAIL",
+    "next_action": "REFINE"
+  },
+  "vague-goal": {
+    "R1": "FAIL",
+    "R2": "FAIL",
+    "verdict": "FAIL",
+    "next_action": "REFINE"
+  },
+  "fragment-goal": {
+    "R1": "PASS",
+    "R2": "UNDETERMINED",
+    "verdict": "UNDETERMINED",
+    "next_action": "PROVIDE_INPUT"
+  },
+  "fragment-sufficient": {
+    "R1": "PASS",
+    "R2": "PASS",
+    "verdict": "PASS",
+    "next_action": "ACCEPT"
+  },
+  "embedded-instruction": {
+    "R1": "PASS",
+    "R2": "FAIL",
+    "verdict": "FAIL",
+    "next_action": "REFINE"
+  }
+}

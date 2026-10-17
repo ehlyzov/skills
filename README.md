@@ -7,6 +7,12 @@ with `SKILL.md`, agent prompt files, references, scripts, and tests.
 
 ## Skills
 
+### `review-task-brief`
+
+A small task-brief reviewer with two criteria, structured JSON, exact evidence
+quotes, and a Python validator. Instructions and examples are in Russian.
+[Skill](review-task-brief/SKILL.md) · [Demo, actual runs, and limitations](docs/review-task-brief/README.md).
+
 ### `product-workflow`
 
 End-to-end product shaping: discovery, decision log, PRD, user scenarios,
