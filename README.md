@@ -7,11 +7,11 @@ with `SKILL.md`, agent prompt files, references, scripts, and tests.
 
 ## Skills
 
-### `review-task-brief`
+### `skill-workbench`
 
-A small task-brief reviewer with two criteria, structured JSON, exact evidence
-quotes, and a Python validator. Instructions and examples are in Russian.
-[Skill](review-task-brief/SKILL.md) · [Demo, actual runs, and limitations](docs/review-task-brief/README.md).
+Create and improve skills by clarifying consequential requirements, defining evals,
+executing checks, and adding an evidence-based debug mode.
+[Skill](skill-workbench/SKILL.md) · [Usage and observed results](docs/skill-workbench/README.md).
 
 ### `product-workflow`
 

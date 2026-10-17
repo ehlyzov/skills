@@ -1,0 +1,9 @@
+{
+  "status": "BLOCKED",
+  "exit_code": 1,
+  "command": "python3 <skill-creator>/scripts/quick_validate.py meeting-actions",
+  "stdout": "",
+  "stderr": "ModuleNotFoundError: No module named 'yaml'",
+  "first_attempt_preserved": true,
+  "limitation": "The standard packaging validator could not start. No dependency installed."
+}

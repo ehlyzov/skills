@@ -1,0 +1,20 @@
+{
+  "status": "READY",
+  "actions": [
+    {
+      "text": "Отправить отчёт",
+      "owner": "Олег",
+      "deadline": "2026-10-18",
+      "evidence": "Олег: отправлю отчёт завтра."
+    },
+    {
+      "text": "Обновить документацию",
+      "owner": null,
+      "deadline": "2026-10-20",
+      "evidence": "Надо обновить документацию через 3 дня."
+    }
+  ],
+  "text_comparison": "semantic; other fields exact unless evidence equivalent exact quote",
+  "source": "user+delegated",
+  "synthetic": true
+}

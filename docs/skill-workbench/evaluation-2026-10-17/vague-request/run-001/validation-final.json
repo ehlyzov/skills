@@ -1,0 +1,6 @@
+{
+  "command": "python3 <skill-workbench>/scripts/check_debug.py run-001/debug.json",
+  "exit_code": 0,
+  "stdout": "{\"valid\": true, \"errors\": [], \"scope\": \"report structure, status consistency, local references; not semantics\"}\n",
+  "stderr": ""
+}

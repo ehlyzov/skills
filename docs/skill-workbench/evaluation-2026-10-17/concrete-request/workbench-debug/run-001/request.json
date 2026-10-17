@@ -1,0 +1,21 @@
+{
+  "language": "ru",
+  "skill_name": "meeting-actions",
+  "requirements": [
+    "Вход JSON: transcript строка или null, reference_date ISO дата или null.",
+    "Выход JSON: status READY или NEEDS_INPUT; actions с text, owner, deadline, evidence.",
+    "Явные обязательства и надо сделать включать; может быть исключать.",
+    "owner/deadline строка или null; отсутствующих владельцев не назначать.",
+    "Без reference_date относительные сроки сохранять словами.",
+    "evidence — точная цитата из transcript.",
+    "null/пустая расшифровка: NEEDS_INPUT, actions []; непустая: READY.",
+    "Не оценивать людей, не отправлять сообщения, не создавать задачи.",
+    "Целевой навык и workbench: debug=true с артефактами.",
+    "Проверить данный синтетический и другие примеры. Рутинные решения делегированы."
+  ],
+  "supplied_example": {
+    "transcript": "Ира: пришлю макет к пятнице. Надо проверить метрики. Может быть, перепишем сервис.",
+    "reference_date": null
+  },
+  "redactions": []
+}

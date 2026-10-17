@@ -1,0 +1,121 @@
+{
+  "behavioral_cases": [
+    {
+      "case": "blank",
+      "schema_and_evidence_exit_code": 0,
+      "schema_and_evidence_stdout": "{\"status\": \"PASS\", \"errors\": []}",
+      "schema_and_evidence_stderr": "",
+      "frozen_expected_fields_equal": true,
+      "status": "PASS"
+    },
+    {
+      "case": "named_owner",
+      "schema_and_evidence_exit_code": 0,
+      "schema_and_evidence_stdout": "{\"status\": \"PASS\", \"errors\": []}",
+      "schema_and_evidence_stderr": "",
+      "frozen_expected_fields_equal": true,
+      "status": "PASS"
+    },
+    {
+      "case": "negation",
+      "schema_and_evidence_exit_code": 0,
+      "schema_and_evidence_stdout": "{\"status\": \"PASS\", \"errors\": []}",
+      "schema_and_evidence_stderr": "",
+      "frozen_expected_fields_equal": true,
+      "status": "PASS"
+    },
+    {
+      "case": "null",
+      "schema_and_evidence_exit_code": 0,
+      "schema_and_evidence_stdout": "{\"status\": \"PASS\", \"errors\": []}",
+      "schema_and_evidence_stderr": "",
+      "frozen_expected_fields_equal": true,
+      "status": "PASS"
+    },
+    {
+      "case": "relative_date",
+      "schema_and_evidence_exit_code": 0,
+      "schema_and_evidence_stdout": "{\"status\": \"PASS\", \"errors\": []}",
+      "schema_and_evidence_stderr": "",
+      "frozen_expected_fields_equal": true,
+      "status": "PASS"
+    },
+    {
+      "case": "speculation",
+      "schema_and_evidence_exit_code": 0,
+      "schema_and_evidence_stdout": "{\"status\": \"PASS\", \"errors\": []}",
+      "schema_and_evidence_stderr": "",
+      "frozen_expected_fields_equal": true,
+      "status": "PASS"
+    },
+    {
+      "case": "supplied",
+      "schema_and_evidence_exit_code": 0,
+      "schema_and_evidence_stdout": "{\"status\": \"PASS\", \"errors\": []}",
+      "schema_and_evidence_stderr": "",
+      "frozen_expected_fields_equal": true,
+      "status": "PASS"
+    },
+    {
+      "case": "two_owners",
+      "schema_and_evidence_exit_code": 0,
+      "schema_and_evidence_stdout": "{\"status\": \"PASS\", \"errors\": []}",
+      "schema_and_evidence_stderr": "",
+      "frozen_expected_fields_equal": true,
+      "status": "PASS"
+    }
+  ],
+  "helper_negative_checks": [
+    {
+      "case": "changed_evidence",
+      "status": "PASS",
+      "actual_errors": [
+        "actions[0].evidence is not an exact transcript substring"
+      ],
+      "expected": "reject malformed result/input"
+    },
+    {
+      "case": "wrong_empty_status",
+      "status": "PASS",
+      "actual_errors": [
+        "incorrect status for transcript"
+      ],
+      "expected": "reject malformed result/input"
+    },
+    {
+      "case": "invalid_owner",
+      "status": "PASS",
+      "actual_errors": [
+        "actions[0].owner must be nonempty string or null"
+      ],
+      "expected": "reject malformed result/input"
+    },
+    {
+      "case": "invalid_reference_date",
+      "status": "PASS",
+      "actual_errors": [
+        "reference_date must be YYYY-MM-DD or null"
+      ],
+      "expected": "reject malformed result/input"
+    }
+  ],
+  "normal_debug_comparison": {
+    "status": "PASS",
+    "task_output_equal": true
+  },
+  "semantic_review": {
+    "status": "PASS",
+    "context": "author-context manual review",
+    "detail": "All 8 first responses satisfy the frozen action-count, inclusion/exclusion, owner, deadline, evidence and status expectations. Equality is a supporting exact comparison, not independent semantic grading."
+  },
+  "counts": {
+    "behavioral_pass": 8,
+    "behavioral_total": 8,
+    "helper_negative_pass": 4,
+    "helper_negative_total": 4
+  },
+  "limitations": [
+    "All behavioral execution and semantic review used the author context.",
+    "Host automatic activation was NOT_RUN; no independent executor."
+  ]
+}

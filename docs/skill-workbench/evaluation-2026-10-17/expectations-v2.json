@@ -1,0 +1,16 @@
+{
+  "case": "date-policy",
+  "expectations": [
+    "Do not silently choose what next Friday means",
+    "Ask a focused question about deadline interpretation or request explicit delegation",
+    "May prepare implementation-independent artifacts but do not claim finished tested behavior"
+  ],
+  "source": "author-generated regression for observed failure",
+  "skill_sha256": {
+    "SKILL.md": "bb98cbc1854ad605f917b61011ae17ebb6a0ba2edc706dd5261d8a22f05b0614",
+    "references/debug.md": "64da6e1391122bb6ad8358f6ed172fcd87e4d5eca6e099167bd3018daee6ae6b",
+    "references/evals.md": "d7e6c9325fbfda0bd5d66be8656e7cd50e64456be000957ad30f22ab89b48f63",
+    "agents/openai.yaml": "19462bfc22662a88cb2c6df5065620726a9af6b7ed637b71366cce5fe7f0674e",
+    "scripts/check_debug.py": "8fd61ff0bbbb8cde937a1c10a8b7a8ffa45772baed75d91fc9e8ae4d6488e697"
+  }
+}

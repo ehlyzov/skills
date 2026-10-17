@@ -1,0 +1,7 @@
+{
+  "status": "NEEDS_INPUT",
+  "actions": [],
+  "text_comparison": "semantic; other fields exact unless evidence equivalent exact quote",
+  "source": "user+delegated",
+  "synthetic": true
+}

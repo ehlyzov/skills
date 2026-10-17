@@ -1,0 +1,122 @@
+{
+  "status": "PASS",
+  "summary": "Создан навык; ограниченный набор проверок в author-context прошёл: 8/8 случаев, 4/4 отрицательных проверок валидатора и normal/debug.",
+  "artifacts": [
+    "brief.md",
+    "candidate-snapshot/SKILL.md",
+    "candidate-snapshot/references/debug.md",
+    "candidate-snapshot/scripts/check_result.py",
+    "checks.json",
+    "decision-report.md",
+    "evals/expectations/blank.json",
+    "evals/expectations/named_owner.json",
+    "evals/expectations/negation.json",
+    "evals/expectations/null.json",
+    "evals/expectations/relative_date.json",
+    "evals/expectations/speculation.json",
+    "evals/expectations/supplied.json",
+    "evals/expectations/two_owners.json",
+    "evals/first-outputs/blank.json",
+    "evals/first-outputs/named_owner.json",
+    "evals/first-outputs/negation.json",
+    "evals/first-outputs/null.json",
+    "evals/first-outputs/relative_date.json",
+    "evals/first-outputs/speculation.json",
+    "evals/first-outputs/supplied.json",
+    "evals/first-outputs/two_owners.json",
+    "evals/input/blank.json",
+    "evals/input/named_owner.json",
+    "evals/input/negation.json",
+    "evals/input/null.json",
+    "evals/input/relative_date.json",
+    "evals/input/speculation.json",
+    "evals/input/supplied.json",
+    "evals/input/two_owners.json",
+    "evals/routing-examples.json",
+    "execution-record.json",
+    "frozen-hashes.json",
+    "packaging-fallback.json",
+    "packaging-first-attempt.json",
+    "request.json",
+    "runtime.json",
+    "target-debug-snapshot/checks.json",
+    "target-debug-snapshot/input.json",
+    "target-debug-snapshot/output.json",
+    "target-debug-snapshot/runtime.json",
+    "target-debug-snapshot/skill/SKILL.md",
+    "target-debug-snapshot/skill/references/debug.md",
+    "target-debug-snapshot/skill/scripts/check_result.py",
+    "target-debug-snapshot/debug.json"
+  ],
+  "decisions": [
+    {
+      "decision": "Не запрашивать уточнений",
+      "basis": "Пользователь задал контракт и делегировал рутинные детали; они отмечены как авторские решения.",
+      "evidence": [
+        "request.json",
+        "brief.md"
+      ],
+      "assumptions": []
+    },
+    {
+      "decision": "Сохранить текущий контекст исполнения",
+      "basis": "По условиям задания другие агенты запрещены; внешние вызовы модели не выполнялись.",
+      "evidence": [
+        "runtime.json",
+        "execution-record.json"
+      ],
+      "assumptions": []
+    },
+    {
+      "decision": "Поставить навык без установки и публикации",
+      "basis": "Нужен готовый локальный результат; побочные внешние действия запрещены.",
+      "evidence": [
+        "candidate-snapshot/SKILL.md",
+        "decision-report.md"
+      ],
+      "assumptions": []
+    }
+  ],
+  "checks": [
+    {
+      "name": "Синтетические поведенческие случаи",
+      "status": "PASS",
+      "detail": "8 из 8 первых авторских ответов совпали с замороженными ожиданиями; структура и evidence проверены кодом, семантика автором.",
+      "evidence": [
+        "checks.json",
+        "execution-record.json"
+      ]
+    },
+    {
+      "name": "Отрицательные проверки помощника",
+      "status": "PASS",
+      "detail": "4 из 4 ошибочных пар вход/выход отклонены валидатором.",
+      "evidence": [
+        "checks.json"
+      ]
+    },
+    {
+      "name": "Normal/debug и debug-артефакты",
+      "status": "PASS",
+      "detail": "Отдельный debug-ответ на тот же пример совпал по JSON; сохранены вход, выход, снимок навыка, проверки и обоснования.",
+      "evidence": [
+        "checks.json",
+        "target-debug-snapshot/debug.json"
+      ]
+    },
+    {
+      "name": "Узкая проверка упаковки",
+      "status": "PASS",
+      "detail": "Проверены простое frontmatter, имя, локальные ссылки, placeholders и переносимость путей.",
+      "evidence": [
+        "packaging-fallback.json"
+      ]
+    }
+  ],
+  "limitations": [
+    "Все поведенческие ответы созданы и проверены автором в общем контексте.",
+    "Стандартный quick_validate BLOCKED: отсутствует yaml; первая ошибка сохранена в packaging-first-attempt.json. Это дополнительный недоступный инструмент, не заявленный PASS.",
+    "Автоматическая активация навыка NOT_RUN; нет подтверждения маршрутизации хоста.",
+    "Данные синтетические; малая выборка не доказывает общую надёжность."
+  ]
+}

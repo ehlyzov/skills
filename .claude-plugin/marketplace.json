@@ -23,11 +23,11 @@
       "description": "Maintain a minimal service knowledge contour with canonical docs, generated overlays, audits, promotion, and pruning."
     },
     {
-      "name": "review-task-brief",
-      "source": "./review-task-brief",
+      "name": "skill-workbench",
+      "source": "./skill-workbench",
       "strict": false,
       "skills": "./",
-      "description": "Review task briefs against two educational criteria with structured results and an evidence validator."
+      "description": "Create and improve skills with explicit requirements, evals, and evidence-based debug artifacts."
     }
   ]
 }

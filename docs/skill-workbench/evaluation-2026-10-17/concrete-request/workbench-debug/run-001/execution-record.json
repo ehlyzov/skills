@@ -1,0 +1,10 @@
+{
+  "executor": "authoring assistant applied the skill semantically in the current shared context",
+  "independent": false,
+  "external_model_calls": 0,
+  "case_outputs": "evals/first-outputs",
+  "debug_output": "../../target-debug/meeting-001/output.json",
+  "attempts_per_execution": 1,
+  "retries": 0,
+  "warning": "Recorded assistant-produced outputs, not a fresh-context agent test; deterministic validators do not establish semantic independence."
+}

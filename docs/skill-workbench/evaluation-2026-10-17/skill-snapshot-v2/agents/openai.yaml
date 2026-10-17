@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill Workbench"
+  short_description: "Create, evaluate, and debug useful agent skills"
+  default_prompt: "Use $skill-workbench to create or improve a skill, clarify consequential requirements, and test its behavior with debug artifacts."

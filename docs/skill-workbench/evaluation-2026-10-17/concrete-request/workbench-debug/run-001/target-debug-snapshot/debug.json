@@ -1,0 +1,64 @@
+{
+  "status": "PASS",
+  "summary": "Две явные задачи извлечены; предположение исключено. Структура, цитаты и совпадение normal/debug проверены.",
+  "artifacts": [
+    "input.json",
+    "output.json",
+    "skill/SKILL.md",
+    "skill/references/debug.md",
+    "skill/scripts/check_result.py",
+    "runtime.json",
+    "checks.json"
+  ],
+  "decisions": [
+    {
+      "decision": "Включить обещание Иры",
+      "basis": "Реплика содержит явное пришлю; говорящий Ира указан. reference_date=null, поэтому к пятнице сохранено словами.",
+      "evidence": [
+        "input.json",
+        "output.json"
+      ],
+      "assumptions": []
+    },
+    {
+      "decision": "Включить проверку метрик без владельца и срока",
+      "basis": "Надо проверить — явная необходимость; исполнитель и срок не названы.",
+      "evidence": [
+        "input.json",
+        "output.json"
+      ],
+      "assumptions": []
+    },
+    {
+      "decision": "Исключить переписывание сервиса",
+      "basis": "Может быть выражает предположение, исключаемое контрактом.",
+      "evidence": [
+        "input.json",
+        "output.json"
+      ],
+      "assumptions": []
+    }
+  ],
+  "checks": [
+    {
+      "name": "Структура и точные цитаты",
+      "status": "PASS",
+      "detail": "Скрипт завершился с кодом 0; точные evidence найдены в transcript.",
+      "evidence": [
+        "checks.json"
+      ]
+    },
+    {
+      "name": "Семантика и normal/debug",
+      "status": "PASS",
+      "detail": "Автор проверил включение двух действий и исключение предположения; task JSON совпал с normal.",
+      "evidence": [
+        "checks.json",
+        "output.json"
+      ]
+    }
+  ],
+  "limitations": [
+    "Исполнение и семантическая проверка выполнены автором в общем контексте, не независимым агентом."
+  ]
+}

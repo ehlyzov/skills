@@ -1,0 +1,17 @@
+{
+  "status": "READY",
+  "actions": [
+    {
+      "text": "Прислать макет",
+      "owner": "Ира",
+      "deadline": "к пятнице",
+      "evidence": "Ира: пришлю макет к пятнице."
+    },
+    {
+      "text": "Проверить метрики",
+      "owner": null,
+      "deadline": null,
+      "evidence": "Надо проверить метрики."
+    }
+  ]
+}

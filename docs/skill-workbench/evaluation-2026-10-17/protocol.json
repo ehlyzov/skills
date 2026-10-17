@@ -1,0 +1,14 @@
+{
+  "model_requested": "gpt-6.1-sol",
+  "reasoning": "high",
+  "contexts": "two fresh agent contexts, no parent history; shared filesystem with instruction-based separation",
+  "expectations_sha256": "5761d8a00893c6de93ba1ed4f8b0aeb2bf30b1b0ace1ae7c649fef69f0acb915",
+  "skill_sha256": {
+    ".DS_Store": "b277e87bab57a9c18adc775c9bdc3bc2d7278b8580f3f7a257338216b3a4dcbd",
+    "SKILL.md": "6e1d3d42c962a09485d501fb67a08e17093480b59ddcdfdf582970d12d389724",
+    "references/debug.md": "64da6e1391122bb6ad8358f6ed172fcd87e4d5eca6e099167bd3018daee6ae6b",
+    "references/evals.md": "d7e6c9325fbfda0bd5d66be8656e7cd50e64456be000957ad30f22ab89b48f63",
+    "agents/openai.yaml": "19462bfc22662a88cb2c6df5065620726a9af6b7ed637b71366cce5fe7f0674e",
+    "scripts/check_debug.py": "8fd61ff0bbbb8cde937a1c10a8b7a8ffa45772baed75d91fc9e8ae4d6488e697"
+  }
+}

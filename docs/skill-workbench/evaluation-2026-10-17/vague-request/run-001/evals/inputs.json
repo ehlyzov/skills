@@ -1,0 +1,46 @@
+[
+  {
+    "id": "normal-01",
+    "synthetic": true,
+    "request": "Исследуй конкурентов продукта X на рынке Y для выбранного командой решения.",
+    "raw_input": {
+      "product": "X",
+      "market": "Y",
+      "decision": null,
+      "competitors": [
+        "A",
+        "B"
+      ],
+      "source_materials": []
+    }
+  },
+  {
+    "id": "missing-01",
+    "synthetic": true,
+    "request": "Исследуй конкурентов.",
+    "raw_input": {}
+  },
+  {
+    "id": "boundary-01",
+    "synthetic": true,
+    "request": "В предоставленных материалах нет сведений об экспорте у A. Сравни A и B.",
+    "raw_input": {
+      "A": "В исходном материале функция экспорта не описана.",
+      "B": "В исходном материале экспорт указан."
+    }
+  },
+  {
+    "id": "activation-01",
+    "synthetic": true,
+    "request": "Сравни наш продукт с конкурентами для позиционирования.",
+    "raw_input": {}
+  },
+  {
+    "id": "nonactivation-01",
+    "synthetic": true,
+    "request": "Сократи этот текст без сравнения компаний.",
+    "raw_input": {
+      "text": "Учебный текст."
+    }
+  }
+]

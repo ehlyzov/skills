@@ -1,0 +1,7 @@
+{
+  "status": "READY",
+  "actions": [],
+  "text_comparison": "semantic; other fields exact unless evidence equivalent exact quote",
+  "source": "user+author",
+  "synthetic": true
+}

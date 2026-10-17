@@ -1,0 +1,27 @@
+{
+  "events": [
+    {
+      "operation": "read supplied SKILL.md",
+      "exit_code": 0,
+      "result": "Read successfully."
+    },
+    {
+      "operation": "read linked references/evals.md and references/debug.md",
+      "exit_code": 0,
+      "result": "Read successfully."
+    },
+    {
+      "operation": "read linked scripts/check_debug.py",
+      "exit_code": 0,
+      "result": "Read successfully."
+    }
+  ],
+  "packaging_validation": {
+    "status": "NOT_RUN",
+    "reason": "Blocked draft; no installable candidate. Host skill-creator was outside permitted read scope."
+  },
+  "behavioral_execution": {
+    "status": "NOT_RUN",
+    "attempts": 0
+  }
+}

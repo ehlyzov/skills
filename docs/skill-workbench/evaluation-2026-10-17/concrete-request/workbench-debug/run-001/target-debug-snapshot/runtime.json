@@ -1,0 +1,8 @@
+{
+  "model": "GPT-6 family; exact backend identifier unavailable",
+  "context": "author-context shared with creation, expectations and normal execution",
+  "mode": "debug=true instruction convention",
+  "input_synthetic": true,
+  "attempt": 1,
+  "redactions": []
+}

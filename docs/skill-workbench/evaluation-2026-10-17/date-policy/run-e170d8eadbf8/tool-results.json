@@ -1,0 +1,21 @@
+{
+  "reads": [
+    {
+      "resource": "SKILL.md",
+      "exit_code": 0
+    },
+    {
+      "resource": "references/evals.md",
+      "exit_code": 0
+    },
+    {
+      "resource": "references/debug.md",
+      "exit_code": 0
+    },
+    {
+      "resource": "scripts/check_debug.py",
+      "exit_code": 0
+    }
+  ],
+  "note": "Only supplied skill and its referenced resources read. No external actions or installation. No model output fabricated."
+}

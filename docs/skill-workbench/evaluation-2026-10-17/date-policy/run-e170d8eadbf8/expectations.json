@@ -1,0 +1,49 @@
+{
+  "frozen_before_execution": true,
+  "cases": [
+    {
+      "id": "user-example",
+      "input_source": "user",
+      "expectation_source": "user output contract; date not supplied",
+      "properties": [
+        "deadline соответствует выбранному правилу",
+        "evidence является точной подстрокой text"
+      ],
+      "expected_deadline": null,
+      "unresolved": "Date policy has not been approved; null here is an unset expectation, not a task output."
+    },
+    {
+      "id": "missing-deadline",
+      "input_source": "synthetic",
+      "expectation_source": "user",
+      "properties": [
+        "deadline=null"
+      ],
+      "evidence_proposal": "empty string; author-generated, not finalized"
+    },
+    {
+      "id": "invalid-date",
+      "input_source": "synthetic",
+      "expectation_source": "author proposal",
+      "properties": [
+        "не выдумывать исправленную reference_date"
+      ],
+      "unresolved": "Error behavior outside successful output contract needs finalization."
+    },
+    {
+      "id": "weekday-boundary",
+      "input_source": "synthetic",
+      "expectation_source": "unresolved policy",
+      "alternatives": {
+        "nearest_strictly_future": "2026-10-23",
+        "next_calendar_week": "2026-10-30"
+      }
+    }
+  ],
+  "activation": {
+    "positive": "Нормализуй срок из рабочей заметки с reference_date",
+    "negative": "Напиши отчёт без задачи нормализации срока",
+    "source": "author-generated",
+    "status": "NOT_RUN"
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "runtime": "current author context; exact model configuration not exposed in the task",
+  "cases": [
+    {
+      "id": "normal-01",
+      "status": "NOT_RUN",
+      "attempts": 0,
+      "reason": "Назначение и критерии навыка ожидают уточнения; фиктивные исполнения не создавались."
+    },
+    {
+      "id": "missing-01",
+      "status": "NOT_RUN",
+      "attempts": 0,
+      "reason": "Назначение и критерии навыка ожидают уточнения; фиктивные исполнения не создавались."
+    },
+    {
+      "id": "boundary-01",
+      "status": "NOT_RUN",
+      "attempts": 0,
+      "reason": "Назначение и критерии навыка ожидают уточнения; фиктивные исполнения не создавались."
+    },
+    {
+      "id": "activation-01",
+      "status": "NOT_RUN",
+      "attempts": 0,
+      "reason": "Назначение и критерии навыка ожидают уточнения; фиктивные исполнения не создавались."
+    },
+    {
+      "id": "nonactivation-01",
+      "status": "NOT_RUN",
+      "attempts": 0,
+      "reason": "Назначение и критерии навыка ожидают уточнения; фиктивные исполнения не создавались."
+    }
+  ],
+  "normal_debug_parity": {
+    "status": "NOT_RUN",
+    "reason": "Нет согласованного исполнимого навыка."
+  },
+  "independent_execution": false,
+  "activation_routing": "NOT_RUN"
+}

@@ -1,0 +1,7 @@
+{
+  "command": "python3 <supplied-skill>/scripts/check_debug.py <run>/debug.json",
+  "exit_code": 0,
+  "stdout": "{\"valid\": true, \"errors\": [], \"scope\": \"report structure, status consistency, local references; not semantics\"}\n",
+  "stderr": "",
+  "scope": "Report structure only; target skill remains BLOCKED."
+}

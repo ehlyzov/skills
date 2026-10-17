@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "checks": {
+    "frontmatter_has_name": true,
+    "frontmatter_has_description": true,
+    "name_matches_folder": true,
+    "linked_debug_reference_exists": true,
+    "linked_helper_exists": true,
+    "no_scaffold_placeholders": true,
+    "no_absolute_file_paths": true
+  },
+  "scope": "Manual/std-library checks for this simple package; does not claim the unavailable official validator passed."
+}

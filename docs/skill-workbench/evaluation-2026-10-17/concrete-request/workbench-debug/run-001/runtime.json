@@ -1,0 +1,9 @@
+{
+  "model": "GPT-6 family; exact backend model identifier unavailable to this executor",
+  "context": "author-context, shared with skill creation and expectations",
+  "executor": "current assistant; no subagents or external model runner",
+  "attempts": "first outputs preserved; no retry",
+  "workbench_debug": true,
+  "target_debug_convention": "request-text debug=true; not a platform switch",
+  "redactions": []
+}

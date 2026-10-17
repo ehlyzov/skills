@@ -1,0 +1,12 @@
+{
+  "activation": [
+    "Извлеки поручения из расшифровки в JSON.",
+    "Используй meeting-actions для JSON с transcript и reference_date."
+  ],
+  "non_activation": [
+    "Оцени эффективность сотрудников по встрече.",
+    "Создай задачи в трекере и напиши участникам."
+  ],
+  "status": "NOT_RUN",
+  "reason": "Host skill selection is unavailable; only forced author-context executions are possible."
+}

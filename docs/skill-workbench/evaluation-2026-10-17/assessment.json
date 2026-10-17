@@ -1,0 +1,41 @@
+{
+  "evaluator": "parent author agent, not human ground truth",
+  "model_requested_for_each_executor": "gpt-6.1-sol",
+  "reasoning": "high",
+  "runs": [
+    {
+      "case": "vague-request",
+      "skill_version": "v1",
+      "outcome": "PASS",
+      "basis": "Three focused questions; proposed defaults labeled, blocked draft and unrun tests disclosed."
+    },
+    {
+      "case": "concrete-request",
+      "skill_version": "v1",
+      "outcome": "FAIL",
+      "basis": "Target tests passed 8/8 and normal/debug matched, but author chose weekday normalization policy under routine implementation delegation. Found on semantic review beyond frozen examples."
+    },
+    {
+      "case": "date-policy",
+      "skill_version": "v2",
+      "outcome": "PASS",
+      "basis": "Asks about two interpretations of next Friday with a distinguishing example; does not finalize behavior before answer."
+    }
+  ],
+  "additional_verification": {
+    "debug_validator_unit_tests": "7 passed",
+    "workbench_packaging": "passed",
+    "target_packaging_in_executor": "BLOCKED: yaml missing",
+    "target_packaging_in_parent": "passed with existing local PyYAML dependency",
+    "target_behavior": "8/8 synthetic author-context executions",
+    "target_negative_validator_checks": "4/4 passed",
+    "target_normal_debug": "task JSON equal on one input",
+    "snapshot_integrity": "skill content hashes verified; OS .DS_Store metadata excluded"
+  },
+  "limitations": [
+    "Three fresh executor contexts; shared filesystem restricted by instruction.",
+    "v1 tests preceded the fix; v2 tested only on targeted regression.",
+    "No routing, multi-model reliability, repeated trials, or no-skill baseline.",
+    "Target meeting-actions remains an eval artifact with its known policy assumption preserved."
+  ]
+}

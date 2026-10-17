@@ -1,0 +1,23 @@
+{
+  "schema_and_evidence": {
+    "command": "python3 skill/scripts/check_result.py input.json output.json",
+    "exit_code": 0,
+    "stdout": {
+      "status": "PASS",
+      "errors": []
+    }
+  },
+  "semantic_review": {
+    "status": "PASS",
+    "executor": "author-context assistant",
+    "action_count": 2,
+    "findings": [
+      "Явное обещание Иры включено с owner=Ира.",
+      "Безличное надо включено с owner=null и deadline=null.",
+      "Может быть исключено.",
+      "reference_date=null: к пятнице сохранено словами.",
+      "Обе evidence являются точными подстроками."
+    ]
+  },
+  "normal_debug_equal": true
+}

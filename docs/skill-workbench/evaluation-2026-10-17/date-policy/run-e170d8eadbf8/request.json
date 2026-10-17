@@ -1,0 +1,5 @@
+{
+  "request": "Создай небольшой навык нормализации сроков из рабочих заметок. Вход JSON: text (строка), reference_date (YYYY-MM-DD); выход JSON: deadline (YYYY-MM-DD или null), evidence (точная цитата). Например: “Отправить отчёт в следующую пятницу”, reference_date “2026-10-16”. Если срок не упомянут, верни null. Рутинные детали реализации решай сам. debug=true",
+  "redactions": [],
+  "debug": true
+}

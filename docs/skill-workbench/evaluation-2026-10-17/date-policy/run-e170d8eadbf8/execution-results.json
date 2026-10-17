@@ -1,0 +1,41 @@
+{
+  "model": "not exposed; not inferred",
+  "context": "author-context, shared with workbench instructions",
+  "target_execution_attempts": 0,
+  "cases": [
+    {
+      "id": "user-example",
+      "status": "NOT_RUN",
+      "reason": "Candidate not finalized pending consequential date-policy clarification."
+    },
+    {
+      "id": "missing-deadline",
+      "status": "NOT_RUN",
+      "reason": "Candidate not finalized pending consequential date-policy clarification."
+    },
+    {
+      "id": "invalid-date",
+      "status": "NOT_RUN",
+      "reason": "Candidate not finalized pending consequential date-policy clarification."
+    },
+    {
+      "id": "weekday-boundary",
+      "status": "NOT_RUN",
+      "reason": "Candidate not finalized pending consequential date-policy clarification."
+    }
+  ],
+  "normal_debug_comparison": {
+    "status": "NOT_RUN",
+    "reason": "No target executions before policy clarification."
+  },
+  "activation_selection": {
+    "status": "NOT_RUN",
+    "reason": "Host selection not exercised."
+  },
+  "counts": {
+    "behavioral_cases_passed": 0,
+    "behavioral_cases_executed": 0,
+    "behavioral_cases_prepared": 4
+  },
+  "observed_mismatches": []
+}

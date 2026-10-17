@@ -1,0 +1,14 @@
+{
+  "status": "READY",
+  "actions": [
+    {
+      "text": "Проверить резервную копию",
+      "owner": "Марина",
+      "deadline": "2026-10-23",
+      "evidence": "Надо Марине проверить резервную копию к пятнице."
+    }
+  ],
+  "text_comparison": "semantic; other fields exact unless evidence equivalent exact quote",
+  "source": "user+author",
+  "synthetic": true
+}

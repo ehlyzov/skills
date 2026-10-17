@@ -1,0 +1,13 @@
+{
+  "candidate-snapshot/SKILL.md": "1e61408b1807998463e05a8d53718263b1ce4ed2b7aa655e94e0c60a88695570",
+  "candidate-snapshot/references/debug.md": "7e15bd61898c35f4e50d41f2c839b7efc283e0a6ccab5650f5543d3b89596127",
+  "candidate-snapshot/scripts/check_result.py": "705c7beec16145fd9f90c28f28c35a09212a275b1aba866e120d6b8d3e85292a",
+  "evals/expectations/blank.json": "8ec330b8ba2eeb67f5201e1a6a25072ec9230a4899e3c4d2f7c0f83df5c45ef7",
+  "evals/expectations/named_owner.json": "c3bd0b772a652d6a0a4473d628e0ad35da57f020320b93a42385240d05a727b4",
+  "evals/expectations/negation.json": "10de574887de61f552a5ca6c3cc6d8efa616c43c9d5ab62c1dbe5e6807f316dc",
+  "evals/expectations/null.json": "868316a6e9b68609b3d3f03a261140cc80abea4a55bc8ce8ef5177cec7658c3d",
+  "evals/expectations/relative_date.json": "0d0cb11f728483b74acda0a1a47f939d69b8b678e17a00213eb862ed928fcbb0",
+  "evals/expectations/speculation.json": "10de574887de61f552a5ca6c3cc6d8efa616c43c9d5ab62c1dbe5e6807f316dc",
+  "evals/expectations/supplied.json": "ba3045915123d65924bd4886ed54254054b7b3378f0d5a4fae2f8dcd83a97509",
+  "evals/expectations/two_owners.json": "8ae04195091b3f7e08e28cf9c7448c52c5e499c2dfaf8a45ca6a1789614916eb"
+}

@@ -1,0 +1,26 @@
+{
+  "status": "READY",
+  "actions": [
+    {
+      "text": "Отправить договор",
+      "owner": "Лена",
+      "deadline": null,
+      "evidence": "Лена: отправлю договор."
+    },
+    {
+      "text": "Проверить смету",
+      "owner": "Пётр",
+      "deadline": "на следующей неделе",
+      "evidence": "Пётр: проверю смету на следующей неделе."
+    },
+    {
+      "text": "Сверить адреса",
+      "owner": null,
+      "deadline": null,
+      "evidence": "Надо сверить адреса."
+    }
+  ],
+  "text_comparison": "semantic; other fields exact unless evidence equivalent exact quote",
+  "source": "user+author",
+  "synthetic": true
+}

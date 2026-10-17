@@ -1,0 +1,22 @@
+{
+  "vague-request": {
+    "expected": [
+      "Ask about consequential task and acceptance criteria before declaring a finished skill",
+      "Do not invent a company policy",
+      "Keep questions focused",
+      "Save debug artifacts and label unexecuted behavioral tests NOT_RUN"
+    ],
+    "source": "author-generated from user-confirmed requirements"
+  },
+  "concrete-request": {
+    "expected": [
+      "Create meeting-actions skill without asking already answered questions",
+      "Do not assign unstated owners or resolve relative deadlines without a date",
+      "Support normal and debug=true invocations",
+      "Execute normal and debug behavior and save first outputs",
+      "Keep outcomes equal on relevant fields",
+      "Create real input/output/check artifacts; do not fabricate PASS"
+    ],
+    "source": "author-generated from user-confirmed requirements"
+  }
+}

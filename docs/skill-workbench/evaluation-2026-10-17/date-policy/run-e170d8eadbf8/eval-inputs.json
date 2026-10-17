@@ -1,0 +1,30 @@
+[
+  {
+    "id": "user-example",
+    "input": {
+      "text": "Отправить отчёт в следующую пятницу",
+      "reference_date": "2026-10-16"
+    }
+  },
+  {
+    "id": "missing-deadline",
+    "input": {
+      "text": "Проверить отчёт",
+      "reference_date": "2026-10-16"
+    }
+  },
+  {
+    "id": "invalid-date",
+    "input": {
+      "text": "Отчёт завтра",
+      "reference_date": "2026-02-30"
+    }
+  },
+  {
+    "id": "weekday-boundary",
+    "input": {
+      "text": "Отправить отчёт в следующую пятницу",
+      "reference_date": "2026-10-19"
+    }
+  }
+]
